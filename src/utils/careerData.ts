@@ -6,9 +6,10 @@ export interface Career {
   educationRequired: string;
   skills: string[];
   personalityTraits: string[];
-  averageSalary: string;
+  averageSalary: { [country: string]: string };
   growthOutlook: string;
   icon: string;
+  countries: string[];
 }
 
 // Sample career data
@@ -20,9 +21,18 @@ export const careers: Career[] = [
     educationRequired: "Bachelor's or Master's degree in Data Science, Statistics, Computer Science, or related field",
     skills: ['Machine learning', 'Statistical analysis', 'Python/R programming', 'SQL', 'Data visualization'],
     personalityTraits: ['Analytical', 'Detail-oriented', 'Problem-solver', 'Curious', 'Patient'],
-    averageSalary: '$100,000 - $150,000',
+    averageSalary: {
+      'USA': '$100,000 - $150,000',
+      'UK': '£60,000 - £90,000',
+      'India': '₹12,00,000 - ₹20,00,000',
+      'Canada': 'CA$90,000 - CA$130,000',
+      'Australia': 'AU$110,000 - AU$160,000',
+      'Germany': '€60,000 - €90,000',
+      'Global': '$85,000 - $130,000'
+    },
     growthOutlook: 'Growing much faster than average',
-    icon: 'laptop'
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
   },
   {
     id: 'software-engineer',
@@ -31,9 +41,18 @@ export const careers: Career[] = [
     educationRequired: "Bachelor's degree in Computer Science, Software Engineering, or related field",
     skills: ['Programming languages', 'Algorithms', 'System design', 'Testing', 'Problem-solving'],
     personalityTraits: ['Logical', 'Detail-oriented', 'Creative', 'Team player', 'Continuous learner'],
-    averageSalary: '$90,000 - $140,000',
+    averageSalary: {
+      'USA': '$90,000 - $140,000',
+      'UK': '£50,000 - £80,000',
+      'India': '₹8,00,000 - ₹18,00,000',
+      'Canada': 'CA$80,000 - CA$120,000',
+      'Australia': 'AU$90,000 - AU$140,000',
+      'Germany': '€55,000 - €85,000',
+      'Global': '$75,000 - $120,000'
+    },
     growthOutlook: 'Growing faster than average',
-    icon: 'laptop'
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
   },
   {
     id: 'ux-designer',
@@ -42,9 +61,18 @@ export const careers: Career[] = [
     educationRequired: "Bachelor's degree in Design, Human-Computer Interaction, or related field",
     skills: ['User research', 'Wireframing', 'Prototyping', 'Usability testing', 'Visual design'],
     personalityTraits: ['Empathetic', 'Creative', 'Collaborative', 'Curious', 'Adaptable'],
-    averageSalary: '$85,000 - $125,000',
+    averageSalary: {
+      'USA': '$85,000 - $125,000',
+      'UK': '£45,000 - £75,000',
+      'India': '₹7,00,000 - ₹15,00,000',
+      'Canada': 'CA$75,000 - CA$110,000',
+      'Australia': 'AU$85,000 - AU$130,000',
+      'Germany': '€50,000 - €80,000',
+      'Global': '$70,000 - $110,000'
+    },
     growthOutlook: 'Growing much faster than average',
-    icon: 'laptop'
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
   },
   {
     id: 'marketing-manager',
@@ -53,9 +81,18 @@ export const careers: Career[] = [
     educationRequired: "Bachelor's degree in Marketing, Business, Communications, or related field",
     skills: ['Market research', 'Campaign management', 'Social media', 'Analytics', 'Content creation'],
     personalityTraits: ['Creative', 'Analytical', 'Communicative', 'Strategic thinker', 'Adaptable'],
-    averageSalary: '$70,000 - $120,000',
+    averageSalary: {
+      'USA': '$70,000 - $120,000',
+      'UK': '£40,000 - £70,000',
+      'India': '₹6,00,000 - ₹14,00,000',
+      'Canada': 'CA$65,000 - CA$110,000',
+      'Australia': 'AU$80,000 - AU$130,000',
+      'Germany': '€45,000 - €75,000',
+      'Global': '$60,000 - $100,000'
+    },
     growthOutlook: 'Growing as fast as average',
-    icon: 'briefcase'
+    icon: 'briefcase',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
   },
   {
     id: 'nurse-practitioner',
@@ -64,9 +101,18 @@ export const careers: Career[] = [
     educationRequired: "Master's or Doctorate in Nursing plus certification",
     skills: ['Patient assessment', 'Clinical decision-making', 'Prescribing treatment', 'Communication', 'Compassion'],
     personalityTraits: ['Compassionate', 'Detail-oriented', 'Resilient', 'Communicative', 'Composed'],
-    averageSalary: '$100,000 - $130,000',
+    averageSalary: {
+      'USA': '$100,000 - $130,000',
+      'UK': '£45,000 - £70,000',
+      'India': '₹5,00,000 - ₹10,00,000',
+      'Canada': 'CA$90,000 - CA$120,000',
+      'Australia': 'AU$95,000 - AU$130,000',
+      'Germany': '€50,000 - €75,000',
+      'Global': '$70,000 - $110,000'
+    },
     growthOutlook: 'Growing much faster than average',
-    icon: 'user'
+    icon: 'user',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
   },
   {
     id: 'financial-analyst',
@@ -75,9 +121,18 @@ export const careers: Career[] = [
     educationRequired: "Bachelor's degree in Finance, Economics, Accounting, or related field",
     skills: ['Financial modeling', 'Data analysis', 'Research', 'Excel proficiency', 'Written communication'],
     personalityTraits: ['Analytical', 'Detail-oriented', 'Organized', 'Ethical', 'Problem-solver'],
-    averageSalary: '$65,000 - $100,000',
+    averageSalary: {
+      'USA': '$65,000 - $100,000',
+      'UK': '£35,000 - £65,000',
+      'India': '₹5,00,000 - ₹12,00,000',
+      'Canada': 'CA$60,000 - CA$95,000',
+      'Australia': 'AU$70,000 - AU$110,000',
+      'Germany': '€45,000 - €70,000',
+      'Global': '$55,000 - $90,000'
+    },
     growthOutlook: 'Growing as fast as average',
-    icon: 'briefcase'
+    icon: 'briefcase',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
   },
   {
     id: 'teacher',
@@ -86,9 +141,18 @@ export const careers: Career[] = [
     educationRequired: "Bachelor's degree in Education or subject area, plus teaching certification",
     skills: ['Curriculum planning', 'Classroom management', 'Assessment', 'Communication', 'Patience'],
     personalityTraits: ['Patient', 'Creative', 'Communicative', 'Adaptable', 'Empathetic'],
-    averageSalary: '$45,000 - $80,000',
+    averageSalary: {
+      'USA': '$45,000 - $80,000',
+      'UK': '£25,000 - £45,000',
+      'India': '₹3,00,000 - ₹8,00,000',
+      'Canada': 'CA$50,000 - CA$85,000',
+      'Australia': 'AU$65,000 - AU$95,000',
+      'Germany': '€40,000 - €65,000',
+      'Global': '$40,000 - $70,000'
+    },
     growthOutlook: 'Growing about as fast as average',
-    icon: 'school'
+    icon: 'school',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
   },
   {
     id: 'civil-engineer',
@@ -97,9 +161,18 @@ export const careers: Career[] = [
     educationRequired: "Bachelor's degree in Civil Engineering, plus licensure for some positions",
     skills: ['Technical design', 'Project management', 'Problem-solving', 'Math', 'Communication'],
     personalityTraits: ['Detail-oriented', 'Problem-solver', 'Team player', 'Analytical', 'Creative'],
-    averageSalary: '$70,000 - $110,000',
+    averageSalary: {
+      'USA': '$70,000 - $110,000',
+      'UK': '£35,000 - £60,000',
+      'India': '₹5,00,000 - ₹12,00,000',
+      'Canada': 'CA$70,000 - CA$100,000',
+      'Australia': 'AU$75,000 - AU$120,000',
+      'Germany': '€45,000 - €75,000',
+      'Global': '$60,000 - $100,000'
+    },
     growthOutlook: 'Growing as fast as average',
-    icon: 'briefcase'
+    icon: 'briefcase',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
   },
   {
     id: 'hr-specialist',
@@ -108,9 +181,18 @@ export const careers: Career[] = [
     educationRequired: "Bachelor's degree in Human Resources, Business, or related field",
     skills: ['Interpersonal communication', 'Organization', 'Conflict resolution', 'Employment law', 'Recruiting'],
     personalityTraits: ['Personable', 'Ethical', 'Diplomatic', 'Organized', 'Discreet'],
-    averageSalary: '$60,000 - $90,000',
+    averageSalary: {
+      'USA': '$60,000 - $90,000',
+      'UK': '£30,000 - £55,000',
+      'India': '₹4,00,000 - ₹10,00,000',
+      'Canada': 'CA$55,000 - CA$85,000',
+      'Australia': 'AU$70,000 - AU$100,000',
+      'Germany': '€40,000 - €65,000',
+      'Global': '$50,000 - $80,000'
+    },
     growthOutlook: 'Growing as fast as average',
-    icon: 'users'
+    icon: 'users',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
   },
   {
     id: 'physical-therapist',
@@ -119,9 +201,18 @@ export const careers: Career[] = [
     educationRequired: "Doctorate in Physical Therapy",
     skills: ['Patient assessment', 'Treatment planning', 'Anatomy knowledge', 'Communication', 'Physical stamina'],
     personalityTraits: ['Compassionate', 'Patient', 'Motivational', 'Detail-oriented', 'Supportive'],
-    averageSalary: '$85,000 - $120,000',
+    averageSalary: {
+      'USA': '$85,000 - $120,000',
+      'UK': '£35,000 - £60,000',
+      'India': '₹4,00,000 - ₹9,00,000',
+      'Canada': 'CA$80,000 - CA$110,000',
+      'Australia': 'AU$85,000 - AU$120,000',
+      'Germany': '€45,000 - €70,000',
+      'Global': '$70,000 - $100,000'
+    },
     growthOutlook: 'Growing much faster than average',
-    icon: 'user'
+    icon: 'user',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
   }
 ];
 
@@ -168,3 +259,14 @@ export const skillCategories = [
     ]
   }
 ];
+
+export const countries = [
+  { value: 'USA', label: 'United States', currency: '$' },
+  { value: 'UK', label: 'United Kingdom', currency: '£' },
+  { value: 'India', label: 'India', currency: '₹' },
+  { value: 'Canada', label: 'Canada', currency: 'CA$' },
+  { value: 'Australia', label: 'Australia', currency: 'AU$' },
+  { value: 'Germany', label: 'Germany', currency: '€' },
+  { value: 'Global', label: 'Global Average', currency: '$' }
+];
+

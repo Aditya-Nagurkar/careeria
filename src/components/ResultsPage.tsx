@@ -1,13 +1,13 @@
 
 import React, { useState } from 'react';
-import { Career } from '../utils/careerData';
-import CareerCard from './CareerCard';
+import { Career, countries } from '../utils/careerData';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Briefcase, Brain, BarChart } from 'lucide-react';
 import { UserProfile } from '../utils/aiRecommendation';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ResultsPageProps {
   careers: Career[];
@@ -17,6 +17,7 @@ interface ResultsPageProps {
 
 const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStartOver }) => {
   const [activeTab, setActiveTab] = useState('careers');
+  const [selectedCountry, setSelectedCountry] = useState(userProfile.country || 'USA');
   
   // Sample data for personality chart
   const personalityData = [
@@ -37,11 +38,18 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
   ];
   
   const COLORS = ['#4a48de', '#8b5cf6', '#f06292', '#f59e0b', '#10b981'];
+
+  // Get the country full name from the code
+  const getCountryName = (code: string) => {
+    const country = countries.find(c => c.value === code);
+    return country ? country.label : code;
+  };
   
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold">Your Career Assessment Results</h1>
+        <p className="text-gray-600 mt-2">Based on your profile and preferences</p>
       </div>
       
       <Tabs 
@@ -76,49 +84,85 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
         
         <TabsContent value="careers" className="animate-fade-in">
           <div className="bg-white rounded-lg p-6 shadow-sm mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Your Top Career Matches</h2>
-            <p className="text-gray-600 mb-4">
-              Based on your personality traits and skills, here are the careers that best match your profile.
-            </p>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+              <div className="mb-4 sm:mb-0">
+                <h2 className="text-2xl font-semibold mb-2">Your Top Career Matches</h2>
+                <p className="text-gray-600">
+                  Based on your personality traits and skills
+                </p>
+              </div>
+              
+              <div className="w-full sm:w-48">
+                <label htmlFor="country-select" className="block text-sm font-medium text-gray-700 mb-1">
+                  View salaries for
+                </label>
+                <Select 
+                  value={selectedCountry} 
+                  onValueChange={(value) => setSelectedCountry(value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map((country) => (
+                      <SelectItem key={country.value} value={country.value}>
+                        {country.label} ({country.currency})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {careers.map((career, index) => (
-              <div key={career.id} className="bg-white rounded-lg p-6 shadow-sm border-t-4 border-[#603CBA]">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold">{career.title}</h3>
-                  <span className="bg-green-500 text-white text-sm px-3 py-1 rounded-full">
-                    {Math.round(90 - index * 2)}% Match
-                  </span>
-                </div>
-                <p className="text-gray-600 mb-4">{career.description}</p>
-                
-                <div className="mb-4">
-                  <h4 className="font-medium mb-2">Key Skills:</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {career.skills.slice(0, 4).map((skill, i) => (
-                      <span key={i} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
-                        {skill}
-                      </span>
-                    ))}
+              <div key={career.id}>
+                <div className="hidden md:block">
+                  <div className="bg-white rounded-lg shadow-sm">
+                    <div className="career-card">
+                      {index === 0 && (
+                        <div className="bg-green-500 text-white text-center py-1 text-sm">
+                          Best Match
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full text-[#603CBA] border-[#603CBA] hover:bg-[#603CBA]/10"
+                <div key={career.id} 
+                  className={index === 0 ? 
+                    "md:border-t-4 md:border-green-500 md:rounded-t-none" : ""}
                 >
-                  Learn more
-                </Button>
+                  <div key={career.id} className={index === 0 ? "relative" : ""}>
+                    {index === 0 && (
+                      <div className="md:hidden absolute top-0 right-0 left-0 bg-green-500 text-white text-center py-1 text-sm rounded-t-lg">
+                        Best Match
+                      </div>
+                    )}
+                    <div className={`mt-4 ${index === 0 ? "pt-6 md:pt-0" : ""}`}>
+                      {React.createElement(
+                        React.lazy(() => import('./CareerCard')), 
+                        { 
+                          career, 
+                          rank: index,
+                          country: selectedCountry
+                        }
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
           
           <div className="mt-8 text-center">
+            <p className="text-gray-600 mb-4">
+              Want to explore different options? Try again with different preferences.
+            </p>
             <Button
               onClick={onStartOver}
               variant="outline"
-              className="mx-auto flex items-center gap-2"
+              className="mx-auto flex items-center gap-2 border-[#603CBA] text-[#603CBA] hover:bg-[#603CBA]/10"
             >
               <ArrowLeft className="h-4 w-4" />
               Start a New Assessment
@@ -133,7 +177,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
               This chart shows the distribution of your personality traits based on your assessment responses.
             </p>
             
-            <div className="h-[400px] w-full">
+            <div className="h-[300px] md:h-[400px] w-full">
               <ChartContainer 
                 config={{
                   Analytical: { color: COLORS[0] },
@@ -148,7 +192,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                     data={personalityData}
                     cx="50%"
                     cy="50%"
-                    labelLine={true}
+                    labelLine={false}
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                     outerRadius={120}
                     fill="#8884d8"
@@ -183,7 +227,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
               This radar chart visualizes your strengths across different skill categories.
             </p>
             
-            <div className="h-[400px] w-full">
+            <div className="h-[300px] md:h-[400px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart cx="50%" cy="50%" outerRadius="80%" data={skillsData}>
                   <PolarGrid />
@@ -206,6 +250,14 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                 collaborative environments. Your technical abilities are solid, and you show good problem-solving 
                 capabilities that would benefit analytical roles.
               </p>
+
+              <div className="mt-6 p-4 bg-purple-50 rounded-lg">
+                <h4 className="font-medium text-purple-800 mb-2">Career opportunities in {getCountryName(selectedCountry)}</h4>
+                <p className="text-gray-700">
+                  With your skill profile, you have excellent prospects in {getCountryName(selectedCountry)}. 
+                  The job market in this region particularly values your combination of technical and interpersonal skills.
+                </p>
+              </div>
             </div>
           </div>
         </TabsContent>

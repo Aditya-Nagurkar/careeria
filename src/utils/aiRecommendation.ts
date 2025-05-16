@@ -6,6 +6,7 @@ export interface UserProfile {
   personalityTraits: string[];
   skills: string[];
   interests: string[];
+  country: string;
 }
 
 // This is a simple ML-like algorithm for career recommendations
@@ -93,6 +94,11 @@ export const getCareerRecommendations = (userProfile: UserProfile): Career[] => 
       : 0;
     
     score += weights.interests * interestMatchScore;
+
+    // Country relevance - prioritize careers available in the user's country
+    if (career.countries.includes(userProfile.country)) {
+      score += 0.1; // Bonus for country match
+    }
     
     return score;
   };
