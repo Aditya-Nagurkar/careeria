@@ -5,10 +5,10 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { educationLevels, personalityTraits, skillCategories } from '../utils/careerData';
+import { educationLevels, skillCategories } from '../utils/careerData';
 import { UserProfile } from '../utils/aiRecommendation';
+import PersonalityQuestions from './PersonalityQuestions';
 
 interface AssessmentFormProps {
   onComplete: (userProfile: UserProfile) => void;
@@ -25,7 +25,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
   
   const steps = [
     { title: 'Education', description: 'Tell us about your educational background' },
-    { title: 'Personality', description: 'Select traits that best describe you' },
+    { title: 'Personality', description: 'Answer questions about your work preferences' },
     { title: 'Skills', description: 'What skills do you have or want to develop?' },
     { title: 'Interests', description: 'What topics or fields interest you?' }
   ];
@@ -34,13 +34,9 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
     setFormData(prev => ({ ...prev, education: value }));
   };
   
-  const handlePersonalityTraitToggle = (trait: string) => {
-    setFormData(prev => {
-      const traits = prev.personalityTraits.includes(trait)
-        ? prev.personalityTraits.filter(t => t !== trait)
-        : [...prev.personalityTraits, trait];
-      return { ...prev, personalityTraits: traits };
-    });
+  const handlePersonalityComplete = (traits: string[]) => {
+    setFormData(prev => ({ ...prev, personalityTraits: traits }));
+    nextStep();
   };
   
   const handleSkillToggle = (skill: string) => {
@@ -75,8 +71,6 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
     switch (currentStep) {
       case 0:
         return !formData.education;
-      case 1:
-        return formData.personalityTraits.length === 0;
       case 2:
         return formData.skills.length === 0;
       case 3:
@@ -91,8 +85,8 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
       case 0:
         return (
           <div className="space-y-6 animate-fade-in">
-            <h2 className="text-2xl font-semibold text-career-dark dark:text-gray-100 mb-6">{steps[currentStep].title}</h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">{steps[currentStep].description}</p>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
+            <p className="text-gray-600 mb-6">{steps[currentStep].description}</p>
             
             <div className="space-y-4">
               <Label className="text-base">What is your highest level of education?</Label>
@@ -102,9 +96,14 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
                 className="space-y-3"
               >
                 {educationLevels.map(level => (
-                  <div key={level.value} className="flex items-center space-x-2">
+                  <div 
+                    key={level.value} 
+                    className="flex items-center border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-indigo-300 transition-colors"
+                  >
                     <RadioGroupItem value={level.value} id={`education-${level.value}`} />
-                    <Label htmlFor={`education-${level.value}`} className="font-normal">{level.label}</Label>
+                    <Label htmlFor={`education-${level.value}`} className="ml-3 cursor-pointer w-full font-normal">
+                      {level.label}
+                    </Label>
                   </div>
                 ))}
               </RadioGroup>
@@ -114,33 +113,14 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
         
       case 1:
         return (
-          <div className="space-y-6 animate-fade-in">
-            <h2 className="text-2xl font-semibold text-career-dark dark:text-gray-100 mb-6">{steps[currentStep].title}</h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">{steps[currentStep].description}</p>
-            
-            <div className="space-y-4">
-              <Label className="text-base">Select at least 3 traits that describe you best</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {personalityTraits.map(trait => (
-                  <div key={trait.value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`trait-${trait.value}`}
-                      checked={formData.personalityTraits.includes(trait.value)}
-                      onCheckedChange={() => handlePersonalityTraitToggle(trait.value)}
-                    />
-                    <Label htmlFor={`trait-${trait.value}`} className="font-normal">{trait.label}</Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <PersonalityQuestions onComplete={handlePersonalityComplete} />
         );
         
       case 2:
         return (
           <div className="space-y-6 animate-fade-in">
-            <h2 className="text-2xl font-semibold text-career-dark dark:text-gray-100 mb-6">{steps[currentStep].title}</h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">{steps[currentStep].description}</p>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
+            <p className="text-gray-600 mb-6">{steps[currentStep].description}</p>
             
             <div className="space-y-6">
               {skillCategories.map(category => (
@@ -148,13 +128,16 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
                   <Label className="text-base">{category.name} Skills</Label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {category.skills.map(skill => (
-                      <div key={skill.value} className="flex items-center space-x-2">
+                      <div 
+                        key={skill.value} 
+                        className="flex items-center border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-indigo-300 transition-colors"
+                      >
                         <Checkbox
                           id={`skill-${skill.value}`}
                           checked={formData.skills.includes(skill.value)}
                           onCheckedChange={() => handleSkillToggle(skill.value)}
                         />
-                        <Label htmlFor={`skill-${skill.value}`} className="font-normal">{skill.label}</Label>
+                        <Label htmlFor={`skill-${skill.value}`} className="ml-3 cursor-pointer w-full font-normal">{skill.label}</Label>
                       </div>
                     ))}
                   </div>
@@ -167,8 +150,8 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
       case 3:
         return (
           <div className="space-y-6 animate-fade-in">
-            <h2 className="text-2xl font-semibold text-career-dark dark:text-gray-100 mb-6">{steps[currentStep].title}</h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">{steps[currentStep].description}</p>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
+            <p className="text-gray-600 mb-6">{steps[currentStep].description}</p>
             
             <div className="space-y-4">
               <Label htmlFor="interests" className="text-base">
@@ -191,40 +174,57 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
   };
 
   return (
-    <div className="assessment-container">
-      <div className="step-indicator">
-        {steps.map((_, index) => (
-          <div
-            key={index}
-            className={`step-indicator-dot ${index <= currentStep ? 'active' : ''}`}
-          />
+    <div className="assessment-container max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div className="step-indicator flex justify-between mb-8 relative">
+        {steps.map((step, index) => (
+          <div key={index} className="step-indicator-item flex flex-col items-center relative z-10">
+            <div 
+              className={`w-8 h-8 rounded-full flex items-center justify-center border-2 
+                ${currentStep >= index 
+                  ? 'border-indigo-600 bg-indigo-600 text-white' 
+                  : 'border-gray-300 bg-white text-gray-400'}`}
+            >
+              {index + 1}
+            </div>
+            <span className={`text-xs mt-2 ${currentStep >= index ? 'text-indigo-600' : 'text-gray-400'}`}>
+              {step.title}
+            </span>
+          </div>
         ))}
+        <div className="absolute top-4 h-[2px] w-full bg-gray-200 -z-0">
+          <div 
+            className="h-full bg-indigo-600 transition-all duration-300" 
+            style={{width: `${(currentStep / (steps.length - 1)) * 100}%`}}
+          ></div>
+        </div>
       </div>
       
       {renderForm()}
       
-      <div className="mt-8 flex justify-between">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={prevStep}
-          disabled={currentStep === 0}
-          className="flex items-center gap-1"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Back
-        </Button>
-        
-        <Button
-          type="button"
-          onClick={nextStep}
-          disabled={isNextDisabled()}
-          className="bg-career-primary hover:bg-career-accent"
-        >
-          {currentStep === steps.length - 1 ? 'Get Recommendations' : 'Next'}
-          {currentStep !== steps.length - 1 && <ChevronRight className="h-4 w-4 ml-1" />}
-        </Button>
-      </div>
+      {currentStep !== 1 && (
+        <div className="mt-8 flex justify-between">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={prevStep}
+            disabled={currentStep === 0}
+            className="flex items-center gap-1"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Back
+          </Button>
+          
+          <Button
+            type="button"
+            onClick={nextStep}
+            disabled={isNextDisabled()}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+          >
+            {currentStep === steps.length - 1 ? 'Get Recommendations' : 'Next'}
+            {currentStep !== steps.length - 1 && <ChevronRight className="h-4 w-4 ml-1" />}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

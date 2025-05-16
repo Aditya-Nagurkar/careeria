@@ -16,16 +16,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 210 50% 10%;
 
-    --primary: 196 80% 39%;
+    --primary: 246 80% 60%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 194 95% 43%;
+    --secondary: 213 93% 57%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 213 93% 57%;
+    --accent: 142 71% 45%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -33,9 +33,9 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 196 80% 39%;
+    --ring: 246 80% 60%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -57,16 +57,16 @@
     --popover: 210 50% 15%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 196 70% 39%;
+    --primary: 246 70% 60%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 194 85% 43%;
+    --secondary: 213 83% 57%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 210 30% 25%;
     --muted-foreground: 215 20.2% 75.1%;
 
-    --accent: 213 83% 57%;
+    --accent: 142 64% 40%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 60.6%;
@@ -74,7 +74,7 @@
 
     --border: 210 30% 25%;
     --input: 210 30% 25%;
-    --ring: 196 70% 39%;
+    --ring: 246 70% 60%;
     
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -106,15 +106,15 @@
 }
 
 .step-indicator-dot.active {
-  @apply bg-career-primary;
+  @apply bg-indigo-600;
 }
 
 .assessment-container {
-  @apply max-w-3xl mx-auto p-6 bg-white dark:bg-card rounded-lg shadow-lg animate-fade-in;
+  @apply max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md animate-fade-in;
 }
 
 .career-card {
-  @apply p-6 bg-white dark:bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-career-primary;
+  @apply p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-indigo-600;
 }
 
 /* Make sure forms look good on mobile */
