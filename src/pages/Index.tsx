@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import AssessmentForm from '@/components/AssessmentForm';
+import AssessmentPage from '@/components/AssessmentPage';
 import ResultsPage from '@/components/ResultsPage';
 import { Button } from '@/components/ui/button';
 import { Career } from '@/utils/careerData';
@@ -39,7 +39,7 @@ const Index = () => {
             </p>
             <Button 
               size="lg"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-6 text-lg rounded-md"
+              className="bg-[#603CBA] hover:bg-[#4e309e] text-white px-8 py-6 text-lg rounded-md"
               onClick={() => setShowAssessment(true)}
             >
               Start Your Assessment
@@ -50,8 +50,8 @@ const Index = () => {
           <div className="md:w-1/2 bg-gray-50 p-6 rounded-lg shadow-sm">
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="bg-indigo-100 p-3 rounded-lg">
-                  <Brain className="h-6 w-6 text-indigo-600" />
+                <div className="bg-[#603CBA]/10 p-3 rounded-lg">
+                  <Brain className="h-6 w-6 text-[#603CBA]" />
                 </div>
                 <div>
                   <h3 className="text-xl font-medium text-gray-800">AI-Powered Analysis</h3>
@@ -62,8 +62,8 @@ const Index = () => {
               </div>
               
               <div className="flex items-start gap-4">
-                <div className="bg-indigo-100 p-3 rounded-lg">
-                  <BarChart className="h-6 w-6 text-indigo-600" />
+                <div className="bg-[#603CBA]/10 p-3 rounded-lg">
+                  <BarChart className="h-6 w-6 text-[#603CBA]" />
                 </div>
                 <div>
                   <h3 className="text-xl font-medium text-gray-800">Personalized Insights</h3>
@@ -74,8 +74,8 @@ const Index = () => {
               </div>
               
               <div className="flex items-start gap-4">
-                <div className="bg-indigo-100 p-3 rounded-lg">
-                  <Briefcase className="h-6 w-6 text-indigo-600" />
+                <div className="bg-[#603CBA]/10 p-3 rounded-lg">
+                  <Briefcase className="h-6 w-6 text-[#603CBA]" />
                 </div>
                 <div>
                   <h3 className="text-xl font-medium text-gray-800">Tailored Recommendations</h3>
@@ -92,8 +92,8 @@ const Index = () => {
           <h2 className="text-3xl font-bold mb-12 text-gray-800">How It Works</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <div className="bg-indigo-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                <span className="text-indigo-600 font-bold text-xl">1</span>
+              <div className="bg-[#603CBA]/10 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                <span className="text-[#603CBA] font-bold text-xl">1</span>
               </div>
               <h3 className="font-semibold text-lg mb-3 text-gray-800">Complete Assessment</h3>
               <p className="text-gray-600">
@@ -101,8 +101,8 @@ const Index = () => {
               </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <div className="bg-indigo-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                <span className="text-indigo-600 font-bold text-xl">2</span>
+              <div className="bg-[#603CBA]/10 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                <span className="text-[#603CBA] font-bold text-xl">2</span>
               </div>
               <h3 className="font-semibold text-lg mb-3 text-gray-800">AI Analysis</h3>
               <p className="text-gray-600">
@@ -110,8 +110,8 @@ const Index = () => {
               </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <div className="bg-indigo-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                <span className="text-indigo-600 font-bold text-xl">3</span>
+              <div className="bg-[#603CBA]/10 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                <span className="text-[#603CBA] font-bold text-xl">3</span>
               </div>
               <h3 className="font-semibold text-lg mb-3 text-gray-800">Get Recommendations</h3>
               <p className="text-gray-600">
@@ -124,7 +124,7 @@ const Index = () => {
         <div className="text-center mb-16">
           <Button 
             size="lg"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-8"
+            className="bg-[#603CBA] hover:bg-[#4e309e] text-white px-8"
             onClick={() => setShowAssessment(true)}
           >
             Start Your Career Discovery
@@ -140,9 +140,7 @@ const Index = () => {
       <Header />
       <main className="flex-grow">
         {showAssessment && careerResults.length === 0 && (
-          <div className="py-8">
-            <AssessmentForm onComplete={handleAssessmentComplete} />
-          </div>
+          <AssessmentPage onComplete={handleAssessmentComplete} />
         )}
         {careerResults.length > 0 && userProfile && (
           <ResultsPage 
