@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { UserProfile } from '../utils/aiRecommendation';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface AssessmentPageProps {
   onComplete: (userProfile: UserProfile) => void;
@@ -18,7 +18,7 @@ interface Question {
     label: string;
     trait: string;
   }[];
-  category: 'personality' | 'skills' | 'education';
+  category: 'personality' | 'skills' | 'education' | 'country';
 }
 
 const questions: Question[] = [
@@ -88,6 +88,21 @@ const questions: Question[] = [
       { value: 'doctorate', label: 'Doctorate or Professional Degree', trait: 'doctorate' }
     ],
     category: 'education'
+  },
+  {
+    id: 'country',
+    text: 'Which country are you based in?',
+    options: [
+      { value: 'United States', label: 'United States', trait: 'United States' },
+      { value: 'United Kingdom', label: 'United Kingdom', trait: 'United Kingdom' },
+      { value: 'Canada', label: 'Canada', trait: 'Canada' },
+      { value: 'Australia', label: 'Australia', trait: 'Australia' },
+      { value: 'India', label: 'India', trait: 'India' },
+      { value: 'Germany', label: 'Germany', trait: 'Germany' },
+      { value: 'France', label: 'France', trait: 'France' },
+      { value: 'Other', label: 'Other', trait: 'Other' }
+    ],
+    category: 'country'
   }
 ];
 
@@ -120,7 +135,10 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
         skills: Object.entries(answers)
           .filter(([_, data]) => data.category === 'skills')
           .map(([_, data]) => data.trait),
-        interests: [] // This would need to be populated based on additional questions
+        interests: [], // This would need to be populated based on additional questions
+        country: Object.entries(answers)
+          .filter(([_, data]) => data.category === 'country')
+          .map(([_, data]) => data.trait)[0] || 'United States'
       };
       
       onComplete(profile);

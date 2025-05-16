@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -9,6 +8,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { educationLevels, skillCategories } from '../utils/careerData';
 import { UserProfile } from '../utils/aiRecommendation';
 import PersonalityQuestions from './PersonalityQuestions';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface AssessmentFormProps {
   onComplete: (userProfile: UserProfile) => void;
@@ -20,14 +20,22 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
     education: '',
     personalityTraits: [],
     skills: [],
-    interests: []
+    interests: [],
+    country: 'United States' // Default country
   });
   
   const steps = [
     { title: 'Education', description: 'Tell us about your educational background' },
     { title: 'Personality', description: 'Answer questions about your work preferences' },
     { title: 'Skills', description: 'What skills do you have or want to develop?' },
+    { title: 'Location', description: 'Where are you located?' },
     { title: 'Interests', description: 'What topics or fields interest you?' }
+  ];
+  
+  const countries = [
+    'United States', 'United Kingdom', 'Canada', 'Australia', 
+    'Germany', 'France', 'India', 'Japan', 'China', 'Brazil',
+    'Mexico', 'South Africa', 'Russia', 'Italy', 'Spain'
   ];
   
   const handleEducationChange = (value: string) => {
@@ -46,6 +54,10 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
         : [...prev.skills, skill];
       return { ...prev, skills: skills };
     });
+  };
+  
+  const handleCountryChange = (value: string) => {
+    setFormData(prev => ({ ...prev, country: value }));
   };
   
   const handleInterestsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -74,6 +86,8 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
       case 2:
         return formData.skills.length === 0;
       case 3:
+        return !formData.country;
+      case 4:
         return formData.interests.length === 0;
       default:
         return false;
@@ -148,6 +162,28 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
         );
         
       case 3:
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
+            <p className="text-gray-600 mb-6">{steps[currentStep].description}</p>
+            
+            <div className="space-y-4">
+              <Label htmlFor="country" className="text-base">Select your country</Label>
+              <Select value={formData.country} onValueChange={handleCountryChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select your country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {countries.map(country => (
+                    <SelectItem key={country} value={country}>{country}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        );
+        
+      case 4:
         return (
           <div className="space-y-6 animate-fade-in">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
