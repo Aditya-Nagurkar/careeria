@@ -15,10 +15,10 @@ export interface UserProfile {
 export const getCareerRecommendations = (userProfile: UserProfile): Career[] => {
   // Assign weights to different factors
   const weights = {
-    education: 0.25,
-    specialization: 0.15,
+    education: 0.20,
+    specialization: 0.25,  // Increased the weight for specialization
     personalityTraits: 0.25,
-    skills: 0.25,
+    skills: 0.20,
     interests: 0.10
   };
 
@@ -59,65 +59,92 @@ export const getCareerRecommendations = (userProfile: UserProfile): Career[] => 
       score += weights.education * (userEdLevel / careerEdLevel);
     }
     
-    // Specialization match - new scoring for specialization
+    // Specialization match - improved matching with higher weight
     if (userProfile.specialization && career.relevantFields.length > 0) {
-      const specializationMatch = career.relevantFields.some(field => 
+      // First check for exact or close matches
+      const exactMatch = career.relevantFields.some(field => 
+        field.toLowerCase() === userProfile.specialization!.toLowerCase()
+      );
+      
+      const partialMatch = career.relevantFields.some(field => 
         field.toLowerCase().includes(userProfile.specialization!.toLowerCase()) ||
         userProfile.specialization!.toLowerCase().includes(field.toLowerCase())
       );
       
-      if (specializationMatch) {
+      if (exactMatch) {
         score += weights.specialization;
+      } else if (partialMatch) {
+        score += weights.specialization * 0.7;
+      }
+      
+      // Also check if specialization is mentioned in description
+      if (career.description.toLowerCase().includes(userProfile.specialization!.toLowerCase())) {
+        score += weights.specialization * 0.3;
       }
     }
     
-    // Personality traits match - improved matching
-    const personalityMatchCount = userProfile.personalityTraits.filter(trait => 
-      career.personalityTraits.some(careerTrait => 
-        careerTrait.toLowerCase().includes(trait.toLowerCase()) ||
-        trait.toLowerCase().includes(careerTrait.toLowerCase())
-      )
-    ).length;
+    // Personality traits match - more nuanced matching
+    if (userProfile.personalityTraits.length > 0 && career.personalityTraits.length > 0) {
+      const personalityMatchCount = userProfile.personalityTraits.filter(trait => 
+        career.personalityTraits.some(careerTrait => 
+          careerTrait.toLowerCase() === trait.toLowerCase() ||
+          careerTrait.toLowerCase().includes(trait.toLowerCase()) ||
+          trait.toLowerCase().includes(careerTrait.toLowerCase())
+        )
+      ).length;
+      
+      // Calculate match score as percentage of matched traits
+      const personalityMatchPercentage = personalityMatchCount / Math.min(
+        userProfile.personalityTraits.length,
+        career.personalityTraits.length
+      );
+      
+      score += personalityMatchPercentage * weights.personalityTraits;
+    }
     
-    const personalityMatchScore = career.personalityTraits.length > 0
-      ? Math.min(personalityMatchCount / career.personalityTraits.length, 1) * weights.personalityTraits
-      : 0;
+    // Skills match - improved matching with better relevance scoring
+    if (userProfile.skills.length > 0 && career.skills.length > 0) {
+      const skillsMatchCount = userProfile.skills.filter(skill => 
+        career.skills.some(careerSkill => 
+          careerSkill.toLowerCase() === skill.toLowerCase() ||
+          careerSkill.toLowerCase().includes(skill.toLowerCase()) ||
+          skill.toLowerCase().includes(careerSkill.toLowerCase())
+        )
+      ).length;
+      
+      // Calculate match score based on percentage of matched skills
+      const skillsMatchPercentage = skillsMatchCount / Math.min(
+        userProfile.skills.length,
+        career.skills.length
+      );
+      
+      score += skillsMatchPercentage * weights.skills;
+    }
     
-    score += personalityMatchScore;
-    
-    // Skills match - improved matching
-    const skillsMatchCount = userProfile.skills.filter(skill => 
-      career.skills.some(careerSkill => 
-        careerSkill.toLowerCase().includes(skill.toLowerCase()) ||
-        skill.toLowerCase().includes(careerSkill.toLowerCase())
-      )
-    ).length;
-    
-    const skillsMatchScore = career.skills.length > 0
-      ? Math.min(skillsMatchCount / Math.min(career.skills.length, 5), 1) * weights.skills
-      : 0;
-    
-    score += skillsMatchScore;
-    
-    // Interest match - improved keyword matching
-    const interestMatchCount = userProfile.interests.filter(interest => 
-      career.title.toLowerCase().includes(interest.toLowerCase()) || 
-      career.description.toLowerCase().includes(interest.toLowerCase()) ||
-      career.relevantFields.some(field => field.toLowerCase().includes(interest.toLowerCase()))
-    ).length;
-    
-    const interestMatchScore = userProfile.interests.length > 0
-      ? Math.min(interestMatchCount / userProfile.interests.length, 1) * weights.interests
-      : 0;
-    
-    score += interestMatchScore;
+    // Interest match - more comprehensive keyword matching
+    if (userProfile.interests.length > 0) {
+      const interestMatchCount = userProfile.interests.filter(interest => 
+        // Check title, description, and fields for interest keywords
+        career.title.toLowerCase().includes(interest.toLowerCase()) || 
+        career.description.toLowerCase().includes(interest.toLowerCase()) ||
+        career.relevantFields.some(field => field.toLowerCase().includes(interest.toLowerCase())) ||
+        career.skills.some(skill => skill.toLowerCase().includes(interest.toLowerCase()))
+      ).length;
+      
+      const interestMatchScore = userProfile.interests.length > 0
+        ? Math.min(interestMatchCount / userProfile.interests.length, 1) * weights.interests
+        : 0;
+      
+      score += interestMatchScore;
+    }
 
     // Country relevance - prioritize careers available in the user's country
     if (career.countries.includes(userProfile.country)) {
       score += 0.1; // Bonus for country match
     }
     
-    return score;
+    // Scale score to be between 0-1
+    return Math.min(score, 1);
   };
   
   // Calculate match scores for all careers
@@ -129,5 +156,5 @@ export const getCareerRecommendations = (userProfile: UserProfile): Career[] => 
   // Sort by match score and get top results
   return scoredCareers
     .sort((a, b) => b.matchScore - a.matchScore)
-    .slice(0, 7); // Increased from 5 to 7 to show more options
+    .slice(0, 7); // Return top 7 careers
 };

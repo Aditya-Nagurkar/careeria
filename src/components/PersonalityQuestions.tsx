@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -125,6 +124,8 @@ const PersonalityQuestions: React.FC<PersonalityQuestionsProps> = ({ onComplete 
       ...prev,
       [question.id]: trait
     }));
+    
+    // No automatic advancement here
   };
   
   const nextQuestion = () => {
@@ -171,6 +172,7 @@ const PersonalityQuestions: React.FC<PersonalityQuestionsProps> = ({ onComplete 
           <div 
             key={option.value} 
             className="flex items-center border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-indigo-300 transition-colors"
+            onClick={() => handleAnswer(option.value)}
           >
             <RadioGroupItem value={option.value} id={`option-${option.value}`} className="cursor-pointer" />
             <Label 

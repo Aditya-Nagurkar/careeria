@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -90,21 +91,6 @@ const questions: Question[] = [
     category: 'education'
   },
   {
-    id: 'country',
-    text: 'Which country are you based in?',
-    options: [
-      { value: 'United States', label: 'United States', trait: 'United States' },
-      { value: 'United Kingdom', label: 'United Kingdom', trait: 'United Kingdom' },
-      { value: 'Canada', label: 'Canada', trait: 'Canada' },
-      { value: 'Australia', label: 'Australia', trait: 'Australia' },
-      { value: 'India', label: 'India', trait: 'India' },
-      { value: 'Germany', label: 'Germany', trait: 'Germany' },
-      { value: 'France', label: 'France', trait: 'France' },
-      { value: 'Other', label: 'Other', trait: 'Other' }
-    ],
-    category: 'country'
-  },
-  {
     id: 'specialization',
     text: 'What field did you specialize in during your education?',
     options: [
@@ -118,25 +104,49 @@ const questions: Question[] = [
       { value: 'other', label: 'Other', trait: 'other' }
     ],
     category: 'specialization'
+  },
+  {
+    id: 'country',
+    text: 'Which country are you based in?',
+    options: [
+      { value: 'United States', label: 'United States', trait: 'United States' },
+      { value: 'United Kingdom', label: 'United Kingdom', trait: 'United Kingdom' },
+      { value: 'Canada', label: 'Canada', trait: 'Canada' },
+      { value: 'Australia', label: 'Australia', trait: 'Australia' },
+      { value: 'India', label: 'India', trait: 'India' },
+      { value: 'Germany', label: 'Germany', trait: 'Germany' },
+      { value: 'France', label: 'France', trait: 'France' },
+      { value: 'Other', label: 'Other', trait: 'Other' }
+    ],
+    category: 'country'
   }
 ];
+
+// Reordering questions to put specialization before country
+const reorderedQuestions = [...questions];
+const specialization = reorderedQuestions.splice(6, 1)[0];
+const country = reorderedQuestions.splice(6, 1)[0];
+reorderedQuestions.splice(6, 0, specialization);
+reorderedQuestions.push(country);
 
 const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, { trait: string, category: string }>>({});
   
   const handleAnswer = (value: string) => {
-    const question = questions[currentQuestion];
+    const question = reorderedQuestions[currentQuestion];
     const trait = question.options.find(opt => opt.value === value)?.trait || '';
     
     setAnswers(prev => ({
       ...prev,
       [question.id]: { trait, category: question.category }
     }));
+    
+    // We removed the automatic advancement here
   };
   
   const nextQuestion = () => {
-    if (currentQuestion < questions.length - 1) {
+    if (currentQuestion < reorderedQuestions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
       // Process answers and complete assessment
@@ -169,9 +179,9 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
     }
   };
   
-  const question = questions[currentQuestion];
+  const question = reorderedQuestions[currentQuestion];
   const isAnswered = answers[question.id] !== undefined;
-  const progress = Math.round(((currentQuestion) / questions.length) * 100);
+  const progress = Math.round(((currentQuestion) / reorderedQuestions.length) * 100);
   
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
@@ -181,7 +191,7 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
       
       <div className="bg-white rounded-lg p-6 shadow-sm">
         <div className="flex justify-between mb-2 text-sm text-gray-500">
-          <span>Question {currentQuestion + 1} of {questions.length}</span>
+          <span>Question {currentQuestion + 1} of {reorderedQuestions.length}</span>
           <span>{progress}% Complete</span>
         </div>
         
@@ -204,12 +214,13 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
           {question.options.map((option) => (
             <div 
               key={option.value} 
-              className="flex items-center border border-gray-200 rounded-lg p-4 hover:border-[#603CBA]/50 transition-colors"
+              className="flex items-center border border-gray-200 rounded-lg p-4 hover:border-[#603CBA]/50 transition-colors cursor-pointer"
+              onClick={() => handleAnswer(option.value)}
             >
               <RadioGroupItem 
                 value={option.value} 
                 id={`option-${option.value}`} 
-                className="text-[#603CBA]"
+                className="text-[#603CBA] cursor-pointer"
               />
               <Label 
                 htmlFor={`option-${option.value}`} 
@@ -237,8 +248,8 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
             disabled={!isAnswered}
             className="bg-[#603CBA] hover:bg-[#4e309e] text-white flex items-center justify-center gap-1 w-full sm:w-auto"
           >
-            <span>{currentQuestion === questions.length - 1 ? 'Complete Assessment' : 'Next Question'}</span>
-            {currentQuestion !== questions.length - 1 && <ChevronRight className="h-4 w-4 ml-1" />}
+            <span>{currentQuestion === reorderedQuestions.length - 1 ? 'Complete Assessment' : 'Next Question'}</span>
+            {currentQuestion !== reorderedQuestions.length - 1 && <ChevronRight className="h-4 w-4 ml-1" />}
           </Button>
         </div>
       </div>
