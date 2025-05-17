@@ -1,13 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Career, countries } from '../utils/careerData';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Briefcase, Brain, BarChart } from 'lucide-react';
+import { ArrowLeft, Briefcase, Brain, ChartLineIcon } from 'lucide-react';
 import { UserProfile } from '../utils/aiRecommendation';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import CareerCard from './CareerCard';
 
 interface ResultsPageProps {
   careers: Career[];
@@ -77,7 +78,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
             value="skills" 
             className="flex items-center gap-2 py-4 data-[state=active]:text-[#603CBA] data-[state=active]:border-b-2 data-[state=active]:border-[#603CBA]"
           >
-            <BarChart className="h-5 w-5" />
+            <ChartLineIcon className="h-5 w-5" />
             Skills
           </TabsTrigger>
         </TabsList>
@@ -117,39 +118,18 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
           
           <div className="grid grid-cols-1 gap-6">
             {careers.map((career, index) => (
-              <div key={career.id}>
-                <div className="hidden md:block">
-                  <div className="bg-white rounded-lg shadow-sm">
-                    <div className="career-card">
-                      {index === 0 && (
-                        <div className="bg-green-500 text-white text-center py-1 text-sm">
-                          Best Match
-                        </div>
-                      )}
-                    </div>
+              <div key={career.id} className={index === 0 ? "relative" : ""}>
+                {index === 0 && (
+                  <div className="md:hidden absolute top-0 right-0 left-0 bg-green-500 text-white text-center py-1 text-sm rounded-t-lg">
+                    Best Match
                   </div>
-                </div>
-                <div key={career.id} 
-                  className={index === 0 ? 
-                    "md:border-t-4 md:border-green-500 md:rounded-t-none" : ""}
-                >
-                  <div key={career.id} className={index === 0 ? "relative" : ""}>
-                    {index === 0 && (
-                      <div className="md:hidden absolute top-0 right-0 left-0 bg-green-500 text-white text-center py-1 text-sm rounded-t-lg">
-                        Best Match
-                      </div>
-                    )}
-                    <div className={`mt-4 ${index === 0 ? "pt-6 md:pt-0" : ""}`}>
-                      {React.createElement(
-                        React.lazy(() => import('./CareerCard')), 
-                        { 
-                          career, 
-                          rank: index,
-                          country: selectedCountry
-                        }
-                      )}
-                    </div>
-                  </div>
+                )}
+                <div className={`mt-4 ${index === 0 ? "pt-6 md:pt-0" : ""}`}>
+                  <CareerCard 
+                    career={career} 
+                    rank={index} 
+                    country={selectedCountry}
+                  />
                 </div>
               </div>
             ))}
