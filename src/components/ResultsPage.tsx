@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Career, countries } from '../utils/careerData';
 import { Button } from '@/components/ui/button';
@@ -210,9 +209,33 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
             <div className="mt-8">
               <h3 className="text-lg font-medium mb-2">What This Means</h3>
               <p className="text-gray-600">
-                Your personality profile shows a balanced mix of analytical thinking, creativity, and practical 
-                problem-solving. This combination makes you adaptable to various work environments and capable
-                of approaching problems from multiple angles.
+                {(() => {
+                  // Sort personality traits by frequency
+                  const sortedTraits = Object.entries(personalityData)
+                    .sort(([,a], [,b]) => b - a)
+                    .map(([trait]) => trait);
+
+                  // Get top 3 traits
+                  const topTraits = sortedTraits.slice(0, 3);
+                  
+                  // Generate dynamic insight based on top traits
+                  const traitDescriptions: { [key: string]: string } = {
+                    Analytical: "approach problems methodically and enjoy working with data",
+                    Creative: "think outside the box and come up with innovative solutions",
+                    Social: "work well with others and have strong interpersonal skills",
+                    Leadership: "take initiative and guide others effectively",
+                    Practical: "focus on realistic solutions and tangible results"
+                  };
+
+                  const descriptions = topTraits
+                    .map(trait => traitDescriptions[trait] || `demonstrate strong ${trait.toLowerCase()} qualities`)
+                    .join(", and ");
+
+                  return `Your personality assessment reveals that you primarily ${descriptions}. ` +
+                    `This unique combination of traits suggests you would excel in roles that require ${
+                      topTraits.map(trait => trait.toLowerCase()).join(", ")
+                    }. Consider careers that align with these strengths to maximize your potential.`;
+                })()}
               </p>
             </div>
           </div>
@@ -248,19 +271,47 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
               <h3 className="text-lg font-medium mb-2">Key Insights</h3>
               <p className="text-gray-600">
                 {(() => {
-                  // Get top skills
+                  // Get top skills (those with highest percentages)
                   const topSkills = skillsChartData
                     .sort((a, b) => b.A - a.A)
+                    .slice(0, 3);
+                  
+                  // Get top personality traits
+                  const topTraits = Object.entries(personalityData)
+                    .sort(([,a], [,b]) => b - a)
                     .slice(0, 2)
-                    .map(skill => skill.subject);
+                    .map(([trait]) => trait.toLowerCase());
                   
-                  // Get personality traits
-                  const traits = Object.keys(personalityData);
+                  // Find careers that match top skills and traits
+                  const matchingCareers = careers
+                    .filter(career => 
+                      // Check if career requires any of the top skills
+                      career.skills.some(skill => 
+                        topSkills.some(topSkill => 
+                          skill.toLowerCase().includes(topSkill.subject.toLowerCase())
+                        )
+                      ) &&
+                      // Check if career matches personality traits
+                      career.personalityTraits.some(trait =>
+                        topTraits.includes(trait.toLowerCase())
+                      )
+                    )
+                    .slice(0, 2) // Get top 2 matching careers
+                    .map(career => career.title);
+
+                  const skillsText = topSkills
+                    .map(skill => skill.subject)
+                    .join(", ");
                   
-                  return `Your profile shows strong capabilities in ${topSkills.join(' and ')}, ` +
-                    `complemented by your ${traits.slice(0, 2).join(' and ')} traits. ` +
-                    `This combination makes you well-suited for roles that require ${topSkills[0].toLowerCase()} expertise ` +
-                    `while leveraging your ${traits[0].toLowerCase()} approach.`;
+                  const traitsText = topTraits.join(" and ");
+                  
+                  let careerSuggestion = "";
+                  if (matchingCareers.length > 0) {
+                    careerSuggestion = ` Based on this profile, you might excel in roles like ${matchingCareers.join(" or ")}.`;
+                  }
+
+                  return `Your strongest capabilities are in ${skillsText}, complemented by your ${traitsText} traits. ` +
+                    `This combination makes you particularly effective in roles that require both technical expertise and personal qualities.${careerSuggestion}`;
                 })()}
               </p>
             </div>
