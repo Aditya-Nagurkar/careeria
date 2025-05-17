@@ -1,5 +1,5 @@
 
-import React, { useState, Suspense } from 'react';
+import React, { useState } from 'react';
 import { Career, countries } from '../utils/careerData';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -157,36 +157,39 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
               This chart shows the distribution of your personality traits based on your assessment responses.
             </p>
             
-            <div className="h-[300px] md:h-[400px] w-full">
-              <ChartContainer 
-                config={{
-                  Analytical: { color: COLORS[0] },
-                  Creative: { color: COLORS[1] },
-                  Social: { color: COLORS[2] },
-                  Leadership: { color: COLORS[3] },
-                  Practical: { color: COLORS[4] },
-                }}
-              >
-                <PieChart>
-                  <Pie
-                    data={personalityData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={120}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {personalityData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <ChartTooltip
-                    content={<ChartTooltipContent />}
-                  />
-                </PieChart>
-              </ChartContainer>
+            {/* Improved mobile responsiveness for the pie chart */}
+            <div className="flex justify-center w-full">
+              <div className="w-full max-w-[320px] sm:max-w-[400px] aspect-square">
+                <ChartContainer 
+                  config={{
+                    Analytical: { color: COLORS[0] },
+                    Creative: { color: COLORS[1] },
+                    Social: { color: COLORS[2] },
+                    Leadership: { color: COLORS[3] },
+                    Practical: { color: COLORS[4] },
+                  }}
+                >
+                  <PieChart>
+                    <Pie
+                      data={personalityData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      outerRadius="90%"
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {personalityData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip
+                      content={<ChartTooltipContent />}
+                    />
+                  </PieChart>
+                </ChartContainer>
+              </div>
             </div>
             
             <div className="mt-8">
@@ -207,20 +210,23 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
               This radar chart visualizes your strengths across different skill categories.
             </p>
             
-            <div className="h-[300px] md:h-[400px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={skillsData}>
-                  <PolarGrid />
-                  <PolarAngleAxis dataKey="subject" />
-                  <Radar
-                    name="Skills"
-                    dataKey="A"
-                    stroke="#8b5cf6"
-                    fill="#8b5cf6"
-                    fillOpacity={0.6}
-                  />
-                </RadarChart>
-              </ResponsiveContainer>
+            {/* Improved mobile responsiveness for the radar chart */}
+            <div className="flex justify-center w-full">
+              <div className="w-full sm:max-w-[500px] aspect-square">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={skillsData}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="subject" />
+                    <Radar
+                      name="Skills"
+                      dataKey="A"
+                      stroke="#8b5cf6"
+                      fill="#8b5cf6"
+                      fillOpacity={0.6}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
             
             <div className="mt-8">
