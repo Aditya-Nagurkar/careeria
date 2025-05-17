@@ -64,6 +64,52 @@ const personalityQuestions: Question[] = [
       { value: 'diplomatic', label: 'Diplomatic and considerate', trait: 'empathetic' },
       { value: 'detailed', label: 'Thorough and detailed', trait: 'detail-oriented' }
     ]
+  },
+  // Adding more questions for better personality assessment
+  {
+    id: 'leadership',
+    text: 'In a leadership role, I am likely to:',
+    options: [
+      { value: 'delegate', label: 'Delegate tasks and trust others to complete them', trait: 'trusting' },
+      { value: 'hands-on', label: 'Be hands-on and closely monitor progress', trait: 'detail-oriented' },
+      { value: 'coach', label: 'Coach and develop team members', trait: 'empathetic' }
+    ]
+  },
+  {
+    id: 'learning',
+    text: 'When learning something new, I prefer to:',
+    options: [
+      { value: 'practical-learning', label: 'Learn by doing and practicing', trait: 'practical' },
+      { value: 'theory', label: 'Understand the theory and concepts first', trait: 'analytical' },
+      { value: 'observe', label: 'Watch others and then try it myself', trait: 'observant' }
+    ]
+  },
+  {
+    id: 'feedback',
+    text: 'When receiving feedback, I typically:',
+    options: [
+      { value: 'open', label: 'Welcome it as an opportunity to improve', trait: 'growth-oriented' },
+      { value: 'defensive', label: 'Need time to process before accepting it', trait: 'reflective' },
+      { value: 'specific', label: 'Prefer specific examples I can work with', trait: 'practical' }
+    ]
+  },
+  {
+    id: 'change',
+    text: 'When facing major changes, I usually:',
+    options: [
+      { value: 'embrace', label: 'Embrace and look for opportunities', trait: 'adaptable' },
+      { value: 'resist', label: 'Prefer stability and predictability', trait: 'stable' },
+      { value: 'analyze', label: 'Analyze the implications before adapting', trait: 'analytical' }
+    ]
+  },
+  {
+    id: 'success',
+    text: 'I define success primarily as:',
+    options: [
+      { value: 'achievement', label: 'Achieving goals and recognition', trait: 'achievement-oriented' },
+      { value: 'balance', label: 'Finding balance and satisfaction', trait: 'balanced' },
+      { value: 'growth', label: 'Learning and growing continuously', trait: 'growth-oriented' }
+    ]
   }
 ];
 
@@ -126,7 +172,7 @@ const PersonalityQuestions: React.FC<PersonalityQuestionsProps> = ({ onComplete 
             key={option.value} 
             className="flex items-center border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-indigo-300 transition-colors"
           >
-            <RadioGroupItem value={option.value} id={`option-${option.value}`} />
+            <RadioGroupItem value={option.value} id={`option-${option.value}`} className="cursor-pointer" />
             <Label 
               htmlFor={`option-${option.value}`} 
               className="ml-3 cursor-pointer w-full font-normal"
@@ -137,25 +183,25 @@ const PersonalityQuestions: React.FC<PersonalityQuestionsProps> = ({ onComplete 
         ))}
       </RadioGroup>
       
-      <div className="mt-6 flex justify-between">
+      <div className="mt-6 flex justify-between gap-4">
         <Button
           type="button"
           variant="outline"
           onClick={prevQuestion}
           disabled={currentQuestion === 0}
-          className="flex items-center gap-1"
+          className="flex items-center gap-1 flex-1 sm:flex-none"
         >
           <ChevronLeft className="h-4 w-4" />
-          Back
+          <span>Back</span>
         </Button>
         
         <Button
           type="button"
           onClick={nextQuestion}
           disabled={!isAnswered}
-          className="bg-indigo-600 hover:bg-indigo-700"
+          className="bg-indigo-600 hover:bg-indigo-700 flex-1 sm:flex-none flex items-center justify-center"
         >
-          {currentQuestion === personalityQuestions.length - 1 ? 'Complete' : 'Next'}
+          <span>{currentQuestion === personalityQuestions.length - 1 ? 'Complete' : 'Next'}</span>
           {currentQuestion !== personalityQuestions.length - 1 && <ChevronRight className="h-4 w-4 ml-1" />}
         </Button>
       </div>

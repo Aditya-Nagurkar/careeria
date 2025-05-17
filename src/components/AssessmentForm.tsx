@@ -36,19 +36,21 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
     }
   }, [formData.education]);
   
+  // Reordering the steps - moved specialization before country
   const steps = [
     { title: 'Education', description: 'Tell us about your educational background' },
     { title: 'Specialization', description: 'What did you specialize in?' },
     { title: 'Personality', description: 'Answer questions about your work preferences' },
     { title: 'Skills', description: 'What skills do you have or want to develop?' },
-    { title: 'Location', description: 'Where are you located?' },
-    { title: 'Interests', description: 'What topics or fields interest you?' }
+    { title: 'Interests', description: 'What topics or fields interest you?' },
+    { title: 'Location', description: 'Where are you located?' }
   ];
   
   const countries = [
     'United States', 'United Kingdom', 'Canada', 'Australia', 
     'Germany', 'France', 'India', 'Japan', 'China', 'Brazil',
-    'Mexico', 'South Africa', 'Russia', 'Italy', 'Spain'
+    'Mexico', 'South Africa', 'Russia', 'Italy', 'Spain',
+    'Singapore', 'Netherlands', 'Sweden', 'Switzerland', 'South Korea'
   ];
   
   const handleEducationChange = (value: string) => {
@@ -115,9 +117,9 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
       case 3:
         return formData.skills.length === 0;
       case 4:
-        return !formData.country;
-      case 5:
         return formData.interests.length === 0;
+      case 5:
+        return !formData.country;
       default:
         return false;
     }
@@ -143,7 +145,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
                     key={level.value} 
                     className="flex items-center border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-indigo-300 transition-colors"
                   >
-                    <RadioGroupItem value={level.value} id={`education-${level.value}`} />
+                    <RadioGroupItem value={level.value} id={`education-${level.value}`} className="cursor-pointer" />
                     <Label htmlFor={`education-${level.value}`} className="ml-3 cursor-pointer w-full font-normal">
                       {level.label}
                     </Label>
@@ -154,7 +156,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
           </div>
         );
       
-      case 1: // New specialization step
+      case 1: // Specialization step
         return (
           <div className="space-y-6 animate-fade-in">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
@@ -173,7 +175,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
                       key={spec.value} 
                       className="flex items-center border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-indigo-300 transition-colors"
                     >
-                      <RadioGroupItem value={spec.value} id={`spec-${spec.value}`} />
+                      <RadioGroupItem value={spec.value} id={`spec-${spec.value}`} className="cursor-pointer" />
                       <Label htmlFor={`spec-${spec.value}`} className="ml-3 cursor-pointer w-full font-normal">
                         {spec.label}
                       </Label>
@@ -214,6 +216,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
                           id={`skill-${skill.value}`}
                           checked={formData.skills.includes(skill.value)}
                           onCheckedChange={() => handleSkillToggle(skill.value)}
+                          className="cursor-pointer"
                         />
                         <Label htmlFor={`skill-${skill.value}`} className="ml-3 cursor-pointer w-full font-normal">{skill.label}</Label>
                       </div>
@@ -224,8 +227,29 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
             </div>
           </div>
         );
+      
+      case 4: // Interests (moved before country)
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
+            <p className="text-gray-600 mb-6">{steps[currentStep].description}</p>
+            
+            <div className="space-y-4">
+              <Label htmlFor="interests" className="text-base">
+                What fields, industries, or topics are you interested in? (separate by commas)
+              </Label>
+              <Textarea
+                id="interests"
+                placeholder="e.g., Technology, Healthcare, Education, Arts, Finance"
+                className="min-h-[100px]"
+                value={formData.interests.join(', ')}
+                onChange={handleInterestsChange}
+              />
+            </div>
+          </div>
+        );
         
-      case 4:
+      case 5: // Country (moved to last)
         return (
           <div className="space-y-6 animate-fade-in">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
@@ -247,34 +271,13 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
           </div>
         );
         
-      case 5:
-        return (
-          <div className="space-y-6 animate-fade-in">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
-            <p className="text-gray-600 mb-6">{steps[currentStep].description}</p>
-            
-            <div className="space-y-4">
-              <Label htmlFor="interests" className="text-base">
-                What fields, industries, or topics are you interested in? (separate by commas)
-              </Label>
-              <Textarea
-                id="interests"
-                placeholder="e.g., Technology, Healthcare, Education, Arts, Finance"
-                className="min-h-[100px]"
-                value={formData.interests.join(', ')}
-                onChange={handleInterestsChange}
-              />
-            </div>
-          </div>
-        );
-        
       default:
         return null;
     }
   };
 
   return (
-    <div className="assessment-container max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
+    <div className="assessment-container max-w-3xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-md">
       <div className="step-indicator flex justify-between mb-8 relative">
         {steps.map((step, index) => {
           // Skip rendering specialization indicator if no specializations available
@@ -310,13 +313,13 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
       {renderForm()}
       
       {currentStep !== 2 && (
-        <div className="mt-8 flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
+        <div className="mt-8 flex flex-col sm:flex-row justify-between gap-3">
           <Button
             type="button"
             variant="outline"
             onClick={prevStep}
             disabled={currentStep === 0}
-            className="flex items-center justify-center gap-1 w-full sm:w-auto"
+            className="flex items-center justify-center gap-1 w-full sm:w-auto h-auto py-2"
           >
             <ChevronLeft className="h-4 w-4" />
             <span>Back</span>
@@ -326,7 +329,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
             type="button"
             onClick={nextStep}
             disabled={isNextDisabled()}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center gap-1 w-full sm:w-auto"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center gap-1 w-full sm:w-auto h-auto py-2"
           >
             <span>{currentStep === steps.length - 1 ? 'Get Recommendations' : 'Next'}</span>
             {currentStep !== steps.length - 1 && <ChevronRight className="h-4 w-4 ml-1" />}
