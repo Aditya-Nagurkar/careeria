@@ -20,23 +20,38 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
   const [activeTab, setActiveTab] = useState('careers');
   const [selectedCountry, setSelectedCountry] = useState(userProfile.country || 'USA');
   
-  // Sample data for personality chart
-  const personalityData = [
-    { name: 'Analytical', value: 21 },
-    { name: 'Creative', value: 21 },
-    { name: 'Social', value: 18 },
-    { name: 'Leadership', value: 18 },
-    { name: 'Practical', value: 21 },
-  ];
-  
-  // Sample data for skills radar chart
-  const skillsData = [
-    { subject: 'Technical', A: 65 },
-    { subject: 'Communication', A: 80 },
-    { subject: 'Leadership', A: 60 },
-    { subject: 'Adaptability', A: 90 },
-    { subject: 'Problem Solving', A: 75 },
-  ];
+  // Calculate personality trait frequencies
+  const personalityData = userProfile.personalityTraits.reduce((acc: { [key: string]: number }, trait: string) => {
+    acc[trait] = (acc[trait] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Convert to chart data format and calculate percentages
+  const totalTraits = Object.values(personalityData).reduce((sum, count) => sum + count, 0);
+  const personalityChartData = Object.entries(personalityData).map(([name, value]) => ({
+    name,
+    value: (value / totalTraits) * 100
+  }));
+
+  // Convert skills array to radar chart format
+  // Group similar skills and calculate proficiency
+  const skillCategories = {
+    Technical: ['programming', 'technical', 'analytical', 'mathematics', 'engineering'],
+    Communication: ['communication', 'writing', 'speaking', 'presentation'],
+    Leadership: ['leadership', 'management', 'delegation', 'strategy'],
+    Adaptability: ['adaptability', 'flexibility', 'learning', 'innovation'],
+    'Problem Solving': ['problem solving', 'critical thinking', 'decision making', 'research']
+  };
+
+  const skillsChartData = Object.entries(skillCategories).map(([subject, keywords]) => {
+    const matchingSkills = userProfile.skills.filter(skill =>
+      keywords.some(keyword => skill.toLowerCase().includes(keyword))
+    );
+    return {
+      subject,
+      A: (matchingSkills.length / keywords.length) * 100 // Calculate percentage based on matches
+    };
+  });
   
   const COLORS = ['#4a48de', '#8b5cf6', '#f06292', '#f59e0b', '#10b981'];
 
@@ -158,8 +173,8 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
             </p>
             
             {/* Improved mobile responsiveness for the pie chart */}
-            <div className="flex justify-center w-full">
-              <div className="w-full max-w-[320px] sm:max-w-[400px] aspect-square">
+            <div className="flex justify-center w-full items-center h-auto">
+              <div className="w-full sm:max-w-[500px] aspect-square">
                 <ChartContainer 
                   config={{
                     Analytical: { color: COLORS[0] },
@@ -171,16 +186,16 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                 >
                   <PieChart>
                     <Pie
-                      data={personalityData}
+                      data={personalityChartData}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius="90%"
+                      label={({ name, percent }) => `${name}\n${(percent * 100).toFixed(0)}%`}
+                      outerRadius="80%"
                       fill="#8884d8"
                       dataKey="value"
                     >
-                      {personalityData.map((entry, index) => (
+                      {personalityChartData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -214,7 +229,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
             <div className="flex justify-center w-full">
               <div className="w-full sm:max-w-[500px] aspect-square">
                 <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={skillsData}>
+                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={skillsChartData}>
                     <PolarGrid />
                     <PolarAngleAxis dataKey="subject" />
                     <Radar
@@ -232,18 +247,22 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
             <div className="mt-8">
               <h3 className="text-lg font-medium mb-2">Key Insights</h3>
               <p className="text-gray-600">
-                You demonstrate exceptional adaptability and strong communication skills, which are valuable in 
-                collaborative environments. Your technical abilities are solid, and you show good problem-solving 
-                capabilities that would benefit analytical roles.
+                {(() => {
+                  // Get top skills
+                  const topSkills = skillsChartData
+                    .sort((a, b) => b.A - a.A)
+                    .slice(0, 2)
+                    .map(skill => skill.subject);
+                  
+                  // Get personality traits
+                  const traits = Object.keys(personalityData);
+                  
+                  return `Your profile shows strong capabilities in ${topSkills.join(' and ')}, ` +
+                    `complemented by your ${traits.slice(0, 2).join(' and ')} traits. ` +
+                    `This combination makes you well-suited for roles that require ${topSkills[0].toLowerCase()} expertise ` +
+                    `while leveraging your ${traits[0].toLowerCase()} approach.`;
+                })()}
               </p>
-
-              <div className="mt-6 p-4 bg-purple-50 rounded-lg">
-                <h4 className="font-medium text-purple-800 mb-2">Career opportunities in {getCountryName(selectedCountry)}</h4>
-                <p className="text-gray-700">
-                  With your skill profile, you have excellent prospects in {getCountryName(selectedCountry)}. 
-                  The job market in this region particularly values your combination of technical and interpersonal skills.
-                </p>
-              </div>
             </div>
           </div>
         </TabsContent>
