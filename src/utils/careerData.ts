@@ -9,6 +9,8 @@ export interface Career {
   growthOutlook: string;
   icon: string;
   countries: string[];
+  relevantFields: string[]; // Added this property
+  matchScore?: number; // Optional property for scoring
 }
 
 // Sample career data
@@ -31,7 +33,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing much faster than average',
     icon: 'laptop',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Data Science', 'Statistics', 'Computer Science', 'Mathematics']
   },
   {
     id: 'software-engineer',
@@ -51,7 +54,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing faster than average',
     icon: 'laptop',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Computer Science', 'Software Engineering', 'Information Technology']
   },
   {
     id: 'ux-designer',
@@ -71,7 +75,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing much faster than average',
     icon: 'laptop',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Design', 'Human-Computer Interaction', 'User Experience', 'Visual Design']
   },
   {
     id: 'marketing-manager',
@@ -91,7 +96,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing as fast as average',
     icon: 'briefcase',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Marketing', 'Business', 'Communications', 'Advertising']
   },
   {
     id: 'nurse-practitioner',
@@ -111,7 +117,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing much faster than average',
     icon: 'user',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Nursing', 'Healthcare', 'Medicine', 'Health Sciences']
   },
   {
     id: 'financial-analyst',
@@ -131,7 +138,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing as fast as average',
     icon: 'briefcase',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Finance', 'Economics', 'Accounting', 'Business']
   },
   {
     id: 'teacher',
@@ -151,7 +159,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing about as fast as average',
     icon: 'school',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Education', 'Teaching', 'Subject Specialization']
   },
   {
     id: 'civil-engineer',
@@ -171,7 +180,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing as fast as average',
     icon: 'briefcase',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Civil Engineering', 'Engineering', 'Construction', 'Infrastructure']
   },
   {
     id: 'hr-specialist',
@@ -191,7 +201,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing as fast as average',
     icon: 'users',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Human Resources', 'Business', 'Psychology', 'Management']
   },
   {
     id: 'physical-therapist',
@@ -211,7 +222,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing much faster than average',
     icon: 'user',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Physical Therapy', 'Health Sciences', 'Rehabilitation', 'Kinesiology']
   },
   {
     id: 'cybersecurity-analyst',
@@ -231,7 +243,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing much faster than average',
     icon: 'laptop',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Cybersecurity', 'Computer Science', 'Information Technology', 'Network Security']
   },
   {
     id: 'product-manager',
@@ -251,7 +264,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing faster than average',
     icon: 'briefcase',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Product Management', 'Business', 'Engineering', 'Computer Science']
   },
   {
     id: 'data-analyst',
@@ -271,7 +285,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing faster than average',
     icon: 'laptop',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Data Analysis', 'Statistics', 'Economics', 'Mathematics']
   },
   {
     id: 'graphic-designer',
@@ -291,7 +306,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing as fast as average',
     icon: 'laptop',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Graphic Design', 'Fine Arts', 'Visual Communications', 'Design']
   },
   {
     id: 'content-writer',
@@ -311,7 +327,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing as fast as average',
     icon: 'briefcase',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Writing', 'English', 'Journalism', 'Communications', 'Marketing']
   },
   {
     id: 'business-analyst',
@@ -331,7 +348,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing faster than average',
     icon: 'briefcase',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Business Administration', 'Finance', 'Economics', 'Information Systems']
   },
   {
     id: 'digital-marketer',
@@ -351,7 +369,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing much faster than average',
     icon: 'briefcase',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Digital Marketing', 'Marketing', 'Communications', 'Business']
   },
   {
     id: 'frontend-developer',
@@ -371,7 +390,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing faster than average',
     icon: 'laptop',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Front-End Development', 'Web Development', 'Computer Science', 'UI/UX']
   },
   {
     id: 'architect',
@@ -391,7 +411,8 @@ export const careers: Career[] = [
     },
     growthOutlook: 'Growing as fast as average',
     icon: 'briefcase',
-    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Architecture', 'Design', 'Construction', 'Urban Planning']
   }
 ];
 
