@@ -1,4 +1,3 @@
-
 export interface Career {
   id: string;
   title: string;
@@ -213,6 +212,186 @@ export const careers: Career[] = [
     growthOutlook: 'Growing much faster than average',
     icon: 'user',
     countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+  },
+  {
+    id: 'cybersecurity-analyst',
+    title: 'Cybersecurity Analyst',
+    description: 'Protect computer systems and networks by identifying vulnerabilities and implementing security measures.',
+    educationRequired: "Bachelor's degree in Cybersecurity, Computer Science, or related field",
+    skills: ['Network security', 'Threat analysis', 'Security protocols', 'Incident response', 'Security software'],
+    personalityTraits: ['Detail-oriented', 'Problem-solver', 'Vigilant', 'Ethical', 'Adaptable'],
+    averageSalary: {
+      'USA': '$90,000 - $130,000',
+      'UK': '£45,000 - £75,000',
+      'India': '₹6,00,000 - ₹16,00,000',
+      'Canada': 'CA$75,000 - CA$115,000',
+      'Australia': 'AU$85,000 - AU$130,000',
+      'Germany': '€50,000 - €80,000',
+      'Global': '$70,000 - $110,000'
+    },
+    growthOutlook: 'Growing much faster than average',
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+  },
+  {
+    id: 'product-manager',
+    title: 'Product Manager',
+    description: 'Oversee the development of products from conception to launch, ensuring they meet user needs and business goals.',
+    educationRequired: "Bachelor's degree in Business, Engineering, Computer Science, or related field",
+    skills: ['Product strategy', 'User research', 'Market analysis', 'Project management', 'Communication'],
+    personalityTraits: ['Strategic thinker', 'Customer-focused', 'Decisive', 'Collaborative', 'Analytical'],
+    averageSalary: {
+      'USA': '$100,000 - $150,000',
+      'UK': '£50,000 - £90,000',
+      'India': '₹15,00,000 - ₹30,00,000',
+      'Canada': 'CA$90,000 - CA$140,000',
+      'Australia': 'AU$100,000 - AU$150,000',
+      'Germany': '€60,000 - €90,000',
+      'Global': '$85,000 - $130,000'
+    },
+    growthOutlook: 'Growing faster than average',
+    icon: 'briefcase',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+  },
+  {
+    id: 'data-analyst',
+    title: 'Data Analyst',
+    description: 'Collect, process, and analyze data to help organizations make better business decisions.',
+    educationRequired: "Bachelor's degree in Statistics, Mathematics, Economics, or related field",
+    skills: ['Data visualization', 'SQL', 'Excel/Spreadsheets', 'Statistical analysis', 'Critical thinking'],
+    personalityTraits: ['Analytical', 'Detail-oriented', 'Methodical', 'Curious', 'Communicative'],
+    averageSalary: {
+      'USA': '$65,000 - $95,000',
+      'UK': '£30,000 - £55,000',
+      'India': '₹5,00,000 - ₹12,00,000',
+      'Canada': 'CA$60,000 - CA$90,000',
+      'Australia': 'AU$70,000 - AU$100,000',
+      'Germany': '€40,000 - €65,000',
+      'Global': '$55,000 - $85,000'
+    },
+    growthOutlook: 'Growing faster than average',
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+  },
+  {
+    id: 'graphic-designer',
+    title: 'Graphic Designer',
+    description: 'Create visual concepts to communicate ideas that inspire, inform, or engage consumers.',
+    educationRequired: "Bachelor's degree in Graphic Design, Fine Arts, or related field",
+    skills: ['Visual design', 'Typography', 'Color theory', 'Adobe Creative Suite', 'Layout design'],
+    personalityTraits: ['Creative', 'Detail-oriented', 'Communicative', 'Adaptable', 'Patient'],
+    averageSalary: {
+      'USA': '$50,000 - $85,000',
+      'UK': '£25,000 - £45,000',
+      'India': '₹3,00,000 - ₹8,00,000',
+      'Canada': 'CA$45,000 - CA$75,000',
+      'Australia': 'AU$55,000 - AU$90,000',
+      'Germany': '€35,000 - €60,000',
+      'Global': '$45,000 - $75,000'
+    },
+    growthOutlook: 'Growing as fast as average',
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+  },
+  {
+    id: 'content-writer',
+    title: 'Content Writer/Copywriter',
+    description: 'Create engaging written content for websites, blogs, social media, and marketing materials.',
+    educationRequired: "Bachelor's degree in English, Journalism, Communications, or related field",
+    skills: ['Writing', 'Editing', 'SEO knowledge', 'Research', 'Creativity'],
+    personalityTraits: ['Creative', 'Detail-oriented', 'Self-motivated', 'Adaptable', 'Communicative'],
+    averageSalary: {
+      'USA': '$45,000 - $80,000',
+      'UK': '£25,000 - £45,000',
+      'India': '₹3,00,000 - ₹8,00,000',
+      'Canada': 'CA$45,000 - CA$75,000',
+      'Australia': 'AU$55,000 - AU$85,000',
+      'Germany': '€30,000 - €55,000',
+      'Global': '$40,000 - $70,000'
+    },
+    growthOutlook: 'Growing as fast as average',
+    icon: 'briefcase',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+  },
+  {
+    id: 'business-analyst',
+    title: 'Business Analyst',
+    description: 'Analyze business needs and processes to recommend improvements and solutions.',
+    educationRequired: "Bachelor's degree in Business Administration, Finance, Economics, or related field",
+    skills: ['Data analysis', 'Process modeling', 'Requirements gathering', 'Problem-solving', 'Communication'],
+    personalityTraits: ['Analytical', 'Detail-oriented', 'Communicative', 'Organized', 'Problem-solver'],
+    averageSalary: {
+      'USA': '$70,000 - $100,000',
+      'UK': '£35,000 - £60,000',
+      'India': '₹6,00,000 - ₹14,00,000',
+      'Canada': 'CA$65,000 - CA$95,000',
+      'Australia': 'AU$75,000 - AU$110,000',
+      'Germany': '€45,000 - €70,000',
+      'Global': '$60,000 - $90,000'
+    },
+    growthOutlook: 'Growing faster than average',
+    icon: 'briefcase',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+  },
+  {
+    id: 'digital-marketer',
+    title: 'Digital Marketing Specialist',
+    description: 'Plan and execute marketing campaigns across digital channels to increase brand awareness and drive sales.',
+    educationRequired: "Bachelor's degree in Marketing, Communications, Business, or related field",
+    skills: ['SEO/SEM', 'Social media marketing', 'Content strategy', 'Analytics', 'Email marketing'],
+    personalityTraits: ['Creative', 'Analytical', 'Adaptable', 'Strategic thinker', 'Communicative'],
+    averageSalary: {
+      'USA': '$55,000 - $90,000',
+      'UK': '£28,000 - £50,000',
+      'India': '₹4,00,000 - ₹12,00,000',
+      'Canada': 'CA$50,000 - CA$85,000',
+      'Australia': 'AU$60,000 - AU$95,000',
+      'Germany': '€35,000 - €65,000',
+      'Global': '$50,000 - $85,000'
+    },
+    growthOutlook: 'Growing much faster than average',
+    icon: 'briefcase',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+  },
+  {
+    id: 'frontend-developer',
+    title: 'Front-End Developer',
+    description: 'Build user interfaces and user experiences for websites and applications.',
+    educationRequired: "Bachelor's degree in Computer Science, Web Development, or related field",
+    skills: ['HTML/CSS', 'JavaScript', 'UI frameworks', 'Responsive design', 'Web performance'],
+    personalityTraits: ['Creative', 'Detail-oriented', 'Problem-solver', 'User-focused', 'Continuous learner'],
+    averageSalary: {
+      'USA': '$75,000 - $120,000',
+      'UK': '£35,000 - £70,000',
+      'India': '₹6,00,000 - ₹15,00,000',
+      'Canada': 'CA$70,000 - CA$110,000',
+      'Australia': 'AU$80,000 - AU$125,000',
+      'Germany': '€45,000 - €75,000',
+      'Global': '$65,000 - $100,000'
+    },
+    growthOutlook: 'Growing faster than average',
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
+  },
+  {
+    id: 'architect',
+    title: 'Architect',
+    description: 'Design buildings and structures that are functional, safe, and visually appealing.',
+    educationRequired: "Bachelor's or Master's degree in Architecture plus licensure",
+    skills: ['Design skills', 'CAD software', 'Building codes', 'Project management', 'Visualization'],
+    personalityTraits: ['Creative', 'Detail-oriented', 'Analytical', 'Spatial awareness', 'Problem-solver'],
+    averageSalary: {
+      'USA': '$70,000 - $120,000',
+      'UK': '£35,000 - £70,000',
+      'India': '₹5,00,000 - ₹15,00,000',
+      'Canada': 'CA$65,000 - CA$110,000',
+      'Australia': 'AU$70,000 - AU$120,000',
+      'Germany': '€40,000 - €70,000',
+      'Global': '$60,000 - $100,000'
+    },
+    growthOutlook: 'Growing as fast as average',
+    icon: 'briefcase',
+    countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany']
   }
 ];
 
@@ -270,3 +449,41 @@ export const countries = [
   { value: 'Global', label: 'Global Average', currency: '$' }
 ];
 
+export const specializationOptions = {
+  'high-school': [],
+  'associate': [
+    { value: 'general-studies', label: 'General Studies' },
+    { value: 'business-admin', label: 'Business Administration' },
+    { value: 'computer-science', label: 'Computer Science' },
+    { value: 'healthcare', label: 'Healthcare' },
+    { value: 'liberal-arts', label: 'Liberal Arts' }
+  ],
+  'bachelor': [
+    { value: 'business', label: 'Business & Management' },
+    { value: 'computer-science', label: 'Computer Science & IT' },
+    { value: 'engineering', label: 'Engineering' },
+    { value: 'health-sciences', label: 'Health Sciences' },
+    { value: 'social-sciences', label: 'Social Sciences' },
+    { value: 'arts-humanities', label: 'Arts & Humanities' },
+    { value: 'education', label: 'Education' },
+    { value: 'natural-sciences', label: 'Natural Sciences' }
+  ],
+  'master': [
+    { value: 'mba', label: 'Business Administration (MBA)' },
+    { value: 'computer-science', label: 'Computer Science & IT' },
+    { value: 'engineering', label: 'Engineering' },
+    { value: 'health-sciences', label: 'Health Sciences' },
+    { value: 'education', label: 'Education' },
+    { value: 'public-admin', label: 'Public Administration' },
+    { value: 'arts-humanities', label: 'Arts & Humanities' },
+    { value: 'natural-sciences', label: 'Natural Sciences' }
+  ],
+  'doctorate': [
+    { value: 'phd-science', label: 'PhD in Sciences' },
+    { value: 'phd-engineering', label: 'PhD in Engineering' },
+    { value: 'phd-humanities', label: 'PhD in Humanities' },
+    { value: 'medical', label: 'Medical Degree' },
+    { value: 'law', label: 'Law Degree' },
+    { value: 'education', label: 'Doctorate in Education' }
+  ]
+};

@@ -18,7 +18,7 @@ interface Question {
     label: string;
     trait: string;
   }[];
-  category: 'personality' | 'skills' | 'education' | 'country';
+  category: 'personality' | 'skills' | 'education' | 'specialization' | 'country';
 }
 
 const questions: Question[] = [
@@ -103,6 +103,21 @@ const questions: Question[] = [
       { value: 'Other', label: 'Other', trait: 'Other' }
     ],
     category: 'country'
+  },
+  {
+    id: 'specialization',
+    text: 'What field did you specialize in during your education?',
+    options: [
+      { value: 'computer-science', label: 'Computer Science & IT', trait: 'computer-science' },
+      { value: 'business', label: 'Business & Management', trait: 'business' },
+      { value: 'engineering', label: 'Engineering', trait: 'engineering' },
+      { value: 'health-sciences', label: 'Health Sciences', trait: 'health-sciences' },
+      { value: 'social-sciences', label: 'Social Sciences', trait: 'social-sciences' },
+      { value: 'arts-humanities', label: 'Arts & Humanities', trait: 'arts-humanities' },
+      { value: 'education', label: 'Education', trait: 'education' },
+      { value: 'other', label: 'Other', trait: 'other' }
+    ],
+    category: 'specialization'
   }
 ];
 
@@ -128,6 +143,9 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
       const profile: UserProfile = {
         education: Object.entries(answers)
           .filter(([_, data]) => data.category === 'education')
+          .map(([_, data]) => data.trait)[0] || '',
+        specialization: Object.entries(answers)
+          .filter(([_, data]) => data.category === 'specialization')
           .map(([_, data]) => data.trait)[0] || '',
         personalityTraits: Object.entries(answers)
           .filter(([_, data]) => data.category === 'personality')
@@ -203,23 +221,23 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
           ))}
         </RadioGroup>
         
-        <div className="mt-8 flex justify-between">
+        <div className="mt-8 flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
           <Button
             variant="outline"
             onClick={prevQuestion}
             disabled={currentQuestion === 0}
-            className="flex items-center gap-1"
+            className="flex items-center justify-center gap-1 w-full sm:w-auto"
           >
             <ChevronLeft className="h-4 w-4" />
-            Previous Question
+            <span>Previous Question</span>
           </Button>
           
           <Button
             onClick={nextQuestion}
             disabled={!isAnswered}
-            className="bg-[#603CBA] hover:bg-[#4e309e] text-white"
+            className="bg-[#603CBA] hover:bg-[#4e309e] text-white flex items-center justify-center gap-1 w-full sm:w-auto"
           >
-            {currentQuestion === questions.length - 1 ? 'Complete Assessment' : 'Next Question'}
+            <span>{currentQuestion === questions.length - 1 ? 'Complete Assessment' : 'Next Question'}</span>
             {currentQuestion !== questions.length - 1 && <ChevronRight className="h-4 w-4 ml-1" />}
           </Button>
         </div>

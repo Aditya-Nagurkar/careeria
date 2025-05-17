@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { educationLevels, skillCategories } from '../utils/careerData';
+import { educationLevels, skillCategories, specializationOptions } from '../utils/careerData';
 import { UserProfile } from '../utils/aiRecommendation';
 import PersonalityQuestions from './PersonalityQuestions';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -18,14 +19,26 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<UserProfile>({
     education: '',
+    specialization: '',
     personalityTraits: [],
     skills: [],
     interests: [],
     country: 'United States' // Default country
   });
   
+  const [availableSpecializations, setAvailableSpecializations] = useState<Array<{value: string, label: string}>>([]);
+  
+  useEffect(() => {
+    if (formData.education && specializationOptions[formData.education as keyof typeof specializationOptions]) {
+      setAvailableSpecializations(specializationOptions[formData.education as keyof typeof specializationOptions]);
+    } else {
+      setAvailableSpecializations([]);
+    }
+  }, [formData.education]);
+  
   const steps = [
     { title: 'Education', description: 'Tell us about your educational background' },
+    { title: 'Specialization', description: 'What did you specialize in?' },
     { title: 'Personality', description: 'Answer questions about your work preferences' },
     { title: 'Skills', description: 'What skills do you have or want to develop?' },
     { title: 'Location', description: 'Where are you located?' },
@@ -39,7 +52,11 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
   ];
   
   const handleEducationChange = (value: string) => {
-    setFormData(prev => ({ ...prev, education: value }));
+    setFormData(prev => ({ ...prev, education: value, specialization: '' }));
+  };
+  
+  const handleSpecializationChange = (value: string) => {
+    setFormData(prev => ({ ...prev, specialization: value }));
   };
   
   const handlePersonalityComplete = (traits: string[]) => {
@@ -67,7 +84,12 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
   
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
-      setCurrentStep(prev => prev + 1);
+      // Skip specialization step if no specializations available
+      if (currentStep === 0 && availableSpecializations.length === 0) {
+        setCurrentStep(2); // Skip to personality step
+      } else {
+        setCurrentStep(prev => prev + 1);
+      }
     } else {
       onComplete(formData);
     }
@@ -75,7 +97,12 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
   
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      // Skip back past specialization if no specializations available
+      if (currentStep === 2 && availableSpecializations.length === 0) {
+        setCurrentStep(0);
+      } else {
+        setCurrentStep(prev => prev - 1);
+      }
     }
   };
   
@@ -83,11 +110,13 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
     switch (currentStep) {
       case 0:
         return !formData.education;
-      case 2:
-        return formData.skills.length === 0;
+      case 1:
+        return availableSpecializations.length > 0 && !formData.specialization;
       case 3:
-        return !formData.country;
+        return formData.skills.length === 0;
       case 4:
+        return !formData.country;
+      case 5:
         return formData.interests.length === 0;
       default:
         return false;
@@ -124,13 +153,48 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
             </div>
           </div>
         );
+      
+      case 1: // New specialization step
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
+            <p className="text-gray-600 mb-6">{steps[currentStep].description}</p>
+            
+            {availableSpecializations.length > 0 ? (
+              <div className="space-y-4">
+                <Label className="text-base">What is your field of specialization?</Label>
+                <RadioGroup 
+                  value={formData.specialization} 
+                  onValueChange={handleSpecializationChange}
+                  className="space-y-3"
+                >
+                  {availableSpecializations.map(spec => (
+                    <div 
+                      key={spec.value} 
+                      className="flex items-center border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-indigo-300 transition-colors"
+                    >
+                      <RadioGroupItem value={spec.value} id={`spec-${spec.value}`} />
+                      <Label htmlFor={`spec-${spec.value}`} className="ml-3 cursor-pointer w-full font-normal">
+                        {spec.label}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p>No specialization options available for the selected education level.</p>
+              </div>
+            )}
+          </div>
+        );
         
-      case 1:
+      case 2:
         return (
           <PersonalityQuestions onComplete={handlePersonalityComplete} />
         );
         
-      case 2:
+      case 3:
         return (
           <div className="space-y-6 animate-fade-in">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
@@ -161,7 +225,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
           </div>
         );
         
-      case 3:
+      case 4:
         return (
           <div className="space-y-6 animate-fade-in">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
@@ -183,7 +247,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
           </div>
         );
         
-      case 4:
+      case 5:
         return (
           <div className="space-y-6 animate-fade-in">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">{steps[currentStep].title}</h2>
@@ -212,51 +276,59 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onComplete }) => {
   return (
     <div className="assessment-container max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <div className="step-indicator flex justify-between mb-8 relative">
-        {steps.map((step, index) => (
-          <div key={index} className="step-indicator-item flex flex-col items-center relative z-10">
-            <div 
-              className={`w-8 h-8 rounded-full flex items-center justify-center border-2 
-                ${currentStep >= index 
-                  ? 'border-indigo-600 bg-indigo-600 text-white' 
-                  : 'border-gray-300 bg-white text-gray-400'}`}
-            >
-              {index + 1}
+        {steps.map((step, index) => {
+          // Skip rendering specialization indicator if no specializations available
+          if (index === 1 && availableSpecializations.length === 0) return null;
+          
+          return (
+            <div key={index} className="step-indicator-item flex flex-col items-center relative z-10">
+              <div 
+                className={`w-8 h-8 rounded-full flex items-center justify-center border-2 
+                  ${currentStep >= index 
+                    ? 'border-indigo-600 bg-indigo-600 text-white' 
+                    : 'border-gray-300 bg-white text-gray-400'}`}
+              >
+                {/* Adjust the step number if specializations are skipped */}
+                {availableSpecializations.length === 0 && index > 1 ? index : index + 1}
+              </div>
+              <span className={`text-xs mt-2 text-center ${currentStep >= index ? 'text-indigo-600' : 'text-gray-400'} hidden sm:block`}>
+                {step.title}
+              </span>
             </div>
-            <span className={`text-xs mt-2 ${currentStep >= index ? 'text-indigo-600' : 'text-gray-400'}`}>
-              {step.title}
-            </span>
-          </div>
-        ))}
+          );
+        })}
         <div className="absolute top-4 h-[2px] w-full bg-gray-200 -z-0">
           <div 
             className="h-full bg-indigo-600 transition-all duration-300" 
-            style={{width: `${(currentStep / (steps.length - 1)) * 100}%`}}
+            style={{
+              width: `${(currentStep / (availableSpecializations.length > 0 ? steps.length - 1 : steps.length - 2)) * 100}%`
+            }}
           ></div>
         </div>
       </div>
       
       {renderForm()}
       
-      {currentStep !== 1 && (
-        <div className="mt-8 flex justify-between">
+      {currentStep !== 2 && (
+        <div className="mt-8 flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
           <Button
             type="button"
             variant="outline"
             onClick={prevStep}
             disabled={currentStep === 0}
-            className="flex items-center gap-1"
+            className="flex items-center justify-center gap-1 w-full sm:w-auto"
           >
             <ChevronLeft className="h-4 w-4" />
-            Back
+            <span>Back</span>
           </Button>
           
           <Button
             type="button"
             onClick={nextStep}
             disabled={isNextDisabled()}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center gap-1 w-full sm:w-auto"
           >
-            {currentStep === steps.length - 1 ? 'Get Recommendations' : 'Next'}
+            <span>{currentStep === steps.length - 1 ? 'Get Recommendations' : 'Next'}</span>
             {currentStep !== steps.length - 1 && <ChevronRight className="h-4 w-4 ml-1" />}
           </Button>
         </div>

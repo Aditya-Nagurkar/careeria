@@ -3,6 +3,7 @@ import { Career, careers } from './careerData';
 
 export interface UserProfile {
   education: string;
+  specialization?: string;  // Added new field
   personalityTraits: string[];
   skills: string[];
   interests: string[];
