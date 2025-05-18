@@ -31,8 +31,41 @@ const CareerCard: React.FC<CareerCardProps> = ({ career, rank, country }) => {
     return career.averageSalary[country] || career.averageSalary['Global'] || 'Salary data not available';
   };
 
+  // Get country-specific information if available
+  const getCountrySpecificInfo = () => {
+    if (career.countrySpecificInfo && career.countrySpecificInfo[country]) {
+      return career.countrySpecificInfo[country];
+    }
+    return null;
+  };
+
   // Determine if this career is available in the user's selected country
   const isAvailableInCountry = career.countries.includes(country);
+  
+  // Get country-specific information
+  const countryInfo = getCountrySpecificInfo();
+
+  // Calculate match score label
+  const getMatchLabel = () => {
+    if (career.matchScore !== undefined) {
+      if (career.matchScore >= 80) return 'Excellent Match';
+      if (career.matchScore >= 60) return 'Strong Match';
+      if (career.matchScore >= 40) return 'Good Match';
+      return 'Potential Match';
+    }
+    return isAvailableInCountry ? `Match #${rank + 1}` : 'International Opportunity';
+  };
+  
+  // Calculate match score color
+  const getMatchColor = () => {
+    if (career.matchScore !== undefined) {
+      if (career.matchScore >= 80) return 'bg-green-100 text-green-800';
+      if (career.matchScore >= 60) return 'bg-emerald-100 text-emerald-800';
+      if (career.matchScore >= 40) return 'bg-blue-100 text-blue-800';
+      return 'bg-purple-100 text-purple-800';
+    }
+    return isAvailableInCountry ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600';
+  };
 
   return (
     <div 
@@ -52,8 +85,9 @@ const CareerCard: React.FC<CareerCardProps> = ({ career, rank, country }) => {
               <h3 className="text-xl font-semibold text-gray-800">{career.title}</h3>
             </div>
             <div className="flex items-center">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${isAvailableInCountry ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
-                {isAvailableInCountry ? `Match #${rank + 1}` : 'International Opportunity'}
+              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getMatchColor()}`}>
+                {getMatchLabel()}
+                {career.matchScore !== undefined && ` (${career.matchScore}%)`}
               </span>
             </div>
           </div>
@@ -69,6 +103,24 @@ const CareerCard: React.FC<CareerCardProps> = ({ career, rank, country }) => {
               <p className="text-sm text-gray-600">{getSalary()}</p>
             </div>
           </div>
+          
+          {countryInfo && (
+            <div className="p-3 bg-blue-50 rounded-lg mb-4">
+              <h4 className="font-medium text-blue-800 mb-1">
+                Market Information for {country}
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div className="text-sm">
+                  <span className="font-medium">Demand:</span> {countryInfo.demand}
+                </div>
+                {countryInfo.regulations && (
+                  <div className="text-sm">
+                    <span className="font-medium">Regulations:</span> {countryInfo.regulations}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           
           <div className="mb-4">
             <h4 className="font-medium mb-1 text-gray-700">Key Skills</h4>

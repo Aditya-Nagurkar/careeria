@@ -9,8 +9,9 @@ export interface Career {
   growthOutlook: string;
   icon: string;
   countries: string[];
-  relevantFields: string[]; // Added this property
-  matchScore?: number; // Optional property for scoring
+  relevantFields: string[];
+  countrySpecificInfo?: { [country: string]: { demand: string, regulations?: string } };
+  matchScore?: number;
 }
 
 // Sample career data
@@ -34,7 +35,13 @@ export const careers: Career[] = [
     growthOutlook: 'Growing much faster than average',
     icon: 'laptop',
     countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
-    relevantFields: ['Data Science', 'Statistics', 'Computer Science', 'Mathematics']
+    relevantFields: ['Data Science', 'Statistics', 'Computer Science', 'Mathematics'],
+    countrySpecificInfo: {
+      'USA': { demand: 'Very High', regulations: 'No specific certifications required but specialized knowledge in industry regulations may be needed' },
+      'UK': { demand: 'High', regulations: 'GDPR knowledge required' },
+      'India': { demand: 'Very High', regulations: 'Knowledge of India\'s data protection laws beneficial' },
+      'Germany': { demand: 'High', regulations: 'Strong emphasis on data privacy laws compliance' }
+    }
   },
   {
     id: 'software-engineer',
@@ -413,6 +420,253 @@ export const careers: Career[] = [
     icon: 'briefcase',
     countries: ['USA', 'UK', 'India', 'Canada', 'Australia', 'Germany'],
     relevantFields: ['Architecture', 'Design', 'Construction', 'Urban Planning']
+  },
+  {
+    id: 'ai-ethics-specialist',
+    title: 'AI Ethics Specialist',
+    description: 'Ensure artificial intelligence systems are designed and implemented ethically, focusing on fairness, accountability, and transparency.',
+    educationRequired: "Master's or PhD in Computer Science, Ethics, Philosophy, or related field with AI focus",
+    skills: ['AI systems', 'Ethics frameworks', 'Policy development', 'Research', 'Technical writing'],
+    personalityTraits: ['Analytical', 'Ethical', 'Detail-oriented', 'Critical thinker', 'Communicative'],
+    averageSalary: {
+      'USA': '$120,000 - $180,000',
+      'UK': '£65,000 - £95,000',
+      'Canada': 'CA$100,000 - CA$150,000',
+      'Germany': '€70,000 - €110,000',
+      'Australia': 'AU$115,000 - AU$170,000',
+      'Global': '$95,000 - $160,000'
+    },
+    growthOutlook: 'Growing rapidly as AI adoption increases',
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'Canada', 'Germany', 'Australia'],
+    relevantFields: ['Artificial Intelligence', 'Ethics', 'Philosophy', 'Computer Science', 'Policy'],
+    countrySpecificInfo: {
+      'USA': { demand: 'High', regulations: 'Emerging regulations across different sectors' },
+      'UK': { demand: 'High', regulations: 'Strong focus on ethical AI frameworks' },
+      'Germany': { demand: 'Very High', regulations: 'Strict regulatory environment for AI applications' }
+    }
+  },
+  {
+    id: 'sustainability-consultant',
+    title: 'Sustainability Consultant',
+    description: 'Advise organizations on environmental sustainability practices, carbon footprint reduction, and ESG (Environmental, Social, Governance) initiatives.',
+    educationRequired: "Bachelor's or Master's degree in Environmental Science, Sustainability, or related field",
+    skills: ['Environmental assessment', 'Carbon accounting', 'Sustainability reporting', 'Strategy development', 'Stakeholder engagement'],
+    personalityTraits: ['Analytical', 'Strategic thinker', 'Communicative', 'Passionate', 'Detail-oriented'],
+    averageSalary: {
+      'USA': '$75,000 - $120,000',
+      'UK': '£40,000 - £80,000',
+      'Canada': 'CA$70,000 - CA$110,000',
+      'Australia': 'AU$80,000 - AU$130,000',
+      'Germany': '€50,000 - €90,000',
+      'Global': '$65,000 - $100,000'
+    },
+    growthOutlook: 'Growing much faster than average due to climate concerns',
+    icon: 'briefcase',
+    countries: ['USA', 'UK', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Environmental Science', 'Sustainability', 'Business', 'Policy'],
+    countrySpecificInfo: {
+      'Germany': { demand: 'Very High', regulations: 'Advanced sustainability regulations and standards' },
+      'Australia': { demand: 'High', regulations: 'Growing focus on climate adaptation strategies' },
+      'UK': { demand: 'High', regulations: 'Strong ESG reporting requirements' }
+    }
+  },
+  {
+    id: 'renewable-energy-engineer',
+    title: 'Renewable Energy Engineer',
+    description: 'Design, develop, and implement renewable energy systems such as solar, wind, and hydroelectric power.',
+    educationRequired: "Bachelor's or Master's degree in Engineering with focus on renewable energy",
+    skills: ['Engineering design', 'System optimization', 'Project management', 'Technical analysis', 'Sustainability assessment'],
+    personalityTraits: ['Analytical', 'Innovative', 'Detail-oriented', 'Problem-solver', 'Environmentally conscious'],
+    averageSalary: {
+      'USA': '$80,000 - $120,000',
+      'UK': '£45,000 - £70,000',
+      'Germany': '€55,000 - €85,000',
+      'Australia': 'AU$85,000 - AU$130,000',
+      'India': '₹8,00,000 - ₹15,00,000',
+      'Global': '$70,000 - $110,000'
+    },
+    growthOutlook: 'Growing much faster than average',
+    icon: 'briefcase',
+    countries: ['USA', 'UK', 'Germany', 'Australia', 'India'],
+    relevantFields: ['Engineering', 'Environmental Science', 'Energy', 'Sustainability'],
+    countrySpecificInfo: {
+      'Germany': { demand: 'Very High', regulations: 'Strong government support and regulations for renewable energy' },
+      'Australia': { demand: 'High', regulations: 'Growing renewable energy sector with supportive policies' },
+      'India': { demand: 'Very High', regulations: 'Rapidly expanding renewable energy industry with government incentives' }
+    }
+  },
+  {
+    id: 'healthcare-data-analyst',
+    title: 'Healthcare Data Analyst',
+    description: 'Analyze healthcare data to improve patient outcomes, operational efficiency, and cost-effectiveness in healthcare organizations.',
+    educationRequired: "Bachelor's or Master's degree in Health Informatics, Data Science, or related field",
+    skills: ['Healthcare analytics', 'Statistical analysis', 'Data visualization', 'SQL', 'Healthcare systems'],
+    personalityTraits: ['Analytical', 'Detail-oriented', 'Problem-solver', 'Patient', 'Ethical'],
+    averageSalary: {
+      'USA': '$75,000 - $110,000',
+      'UK': '£40,000 - £65,000',
+      'Canada': 'CA$70,000 - CA$100,000',
+      'Australia': 'AU$80,000 - AU$120,000',
+      'Germany': '€45,000 - €75,000',
+      'Global': '$65,000 - $95,000'
+    },
+    growthOutlook: 'Growing faster than average',
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'Canada', 'Australia', 'Germany'],
+    relevantFields: ['Health Informatics', 'Data Science', 'Healthcare', 'Statistics'],
+    countrySpecificInfo: {
+      'USA': { demand: 'Very High', regulations: 'HIPAA compliance knowledge required' },
+      'UK': { demand: 'High', regulations: 'NHS data governance framework understanding needed' },
+      'Canada': { demand: 'High', regulations: 'Provincial health data regulations apply' }
+    }
+  },
+  {
+    id: 'blockchain-developer',
+    title: 'Blockchain Developer',
+    description: 'Design and implement blockchain-based solutions for various industries, including finance, supply chain, and healthcare.',
+    educationRequired: "Bachelor's degree in Computer Science or related field with specialization in blockchain technology",
+    skills: ['Smart contracts', 'Cryptography', 'Distributed systems', 'Programming languages', 'Security'],
+    personalityTraits: ['Analytical', 'Detail-oriented', 'Innovative', 'Continuous learner', 'Problem-solver'],
+    averageSalary: {
+      'USA': '$120,000 - $180,000',
+      'UK': '£60,000 - £110,000',
+      'Canada': 'CA$90,000 - CA$150,000',
+      'Singapore': 'S$100,000 - S$160,000',
+      'Switzerland': 'CHF110,000 - CHF180,000',
+      'Global': '$100,000 - $150,000'
+    },
+    growthOutlook: 'Growing rapidly in specific sectors',
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'Canada', 'Singapore', 'Switzerland'],
+    relevantFields: ['Computer Science', 'Cryptography', 'Finance', 'Security'],
+    countrySpecificInfo: {
+      'Singapore': { demand: 'Very High', regulations: 'Progressive regulatory environment for blockchain' },
+      'Switzerland': { demand: 'Very High', regulations: 'Crypto Valley ecosystem with favorable regulations' },
+      'USA': { demand: 'High', regulations: 'Varied regulations across different states' }
+    }
+  },
+  {
+    id: 'telehealth-specialist',
+    title: 'Telehealth Specialist',
+    description: 'Facilitate remote healthcare services using technology to improve access to care and patient outcomes.',
+    educationRequired: "Bachelor's degree in Nursing, Health Sciences, or related field with telehealth certification",
+    skills: ['Healthcare knowledge', 'Digital communication', 'Technical troubleshooting', 'Patient education', 'Documentation'],
+    personalityTraits: ['Patient', 'Empathetic', 'Communicative', 'Adaptable', 'Detail-oriented'],
+    averageSalary: {
+      'USA': '$65,000 - $95,000',
+      'UK': '£35,000 - £60,000',
+      'Canada': 'CA$60,000 - CA$90,000',
+      'Australia': 'AU$70,000 - AU$100,000',
+      'India': '₹5,00,000 - ₹10,00,000',
+      'Global': '$55,000 - $85,000'
+    },
+    growthOutlook: 'Growing much faster than average',
+    icon: 'user',
+    countries: ['USA', 'UK', 'Canada', 'Australia', 'India'],
+    relevantFields: ['Healthcare', 'Nursing', 'Health Informatics', 'Telemedicine'],
+    countrySpecificInfo: {
+      'USA': { demand: 'Very High', regulations: 'State-by-state licensing requirements' },
+      'Australia': { demand: 'High', regulations: 'Government-supported telehealth initiatives' },
+      'India': { demand: 'Very High', regulations: 'Expanding telehealth infrastructure with government support' }
+    }
+  },
+  {
+    id: 'robotic-process-automation-developer',
+    title: 'RPA Developer',
+    description: 'Design and implement software robots to automate repetitive business processes across various industries.',
+    educationRequired: "Bachelor's degree in Computer Science, IT, or related field with RPA certification",
+    skills: ['Process analysis', 'Automation tools (UiPath, Blue Prism, Automation Anywhere)', 'Programming', 'System integration', 'Problem-solving'],
+    personalityTraits: ['Analytical', 'Detail-oriented', 'Creative', 'Logical', 'Process-driven'],
+    averageSalary: {
+      'USA': '$85,000 - $130,000',
+      'UK': '£45,000 - £80,000',
+      'India': '₹6,00,000 - ₹15,00,000',
+      'Japan': '¥7,000,000 - ¥12,000,000',
+      'Global': '$70,000 - $120,000'
+    },
+    growthOutlook: 'Growing much faster than average',
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'India', 'Japan'],
+    relevantFields: ['Software Development', 'Automation', 'Business Process Management', 'IT'],
+    countrySpecificInfo: {
+      'Japan': { demand: 'Very High', regulations: 'Strong focus on automation due to aging workforce' },
+      'India': { demand: 'Very High', regulations: 'Major global RPA delivery center' },
+      'USA': { demand: 'High', regulations: 'Strong demand across finance, healthcare, and insurance sectors' }
+    }
+  },
+  {
+    id: 'bioinformatics-scientist',
+    title: 'Bioinformatics Scientist',
+    description: 'Apply computational techniques to analyze and interpret biological data, particularly in genomics and proteomics.',
+    educationRequired: "Master's or PhD in Bioinformatics, Computational Biology, or related field",
+    skills: ['Genomic data analysis', 'Programming (Python, R)', 'Statistical modeling', 'Database management', 'Molecular biology knowledge'],
+    personalityTraits: ['Analytical', 'Detail-oriented', 'Patient', 'Curious', 'Methodical'],
+    averageSalary: {
+      'USA': '$90,000 - $140,000',
+      'UK': '£45,000 - £75,000',
+      'Germany': '€55,000 - €85,000',
+      'Switzerland': 'CHF90,000 - CHF140,000',
+      'Global': '$80,000 - $120,000'
+    },
+    growthOutlook: 'Growing faster than average',
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'Germany', 'Switzerland'],
+    relevantFields: ['Bioinformatics', 'Computational Biology', 'Genetics', 'Data Science'],
+    countrySpecificInfo: {
+      'Switzerland': { demand: 'High', regulations: 'Strong pharmaceutical industry presence' },
+      'Germany': { demand: 'High', regulations: 'Growing biotech sector with government support' },
+      'USA': { demand: 'Very High', regulations: 'Leading research institutions and biotechnology companies' }
+    }
+  },
+  {
+    id: 'virtual-reality-developer',
+    title: 'Virtual Reality Developer',
+    description: 'Design and create immersive virtual reality experiences for entertainment, education, healthcare, and training purposes.',
+    educationRequired: "Bachelor's degree in Computer Science, Game Development, or related field",
+    skills: ['3D modeling', 'VR platforms (Unity, Unreal)', 'UI/UX design', 'Programming', 'Spatial design'],
+    personalityTraits: ['Creative', 'Detail-oriented', 'Technical', 'Innovative', 'User-focused'],
+    averageSalary: {
+      'USA': '$85,000 - $140,000',
+      'UK': '£45,000 - £80,000',
+      'Japan': '¥7,000,000 - ¥12,000,000',
+      'South Korea': '₩60,000,000 - ₩100,000,000',
+      'Global': '$75,000 - $120,000'
+    },
+    growthOutlook: 'Growing much faster than average',
+    icon: 'laptop',
+    countries: ['USA', 'UK', 'Japan', 'South Korea'],
+    relevantFields: ['Game Development', 'Computer Science', 'Digital Media', '3D Design'],
+    countrySpecificInfo: {
+      'Japan': { demand: 'Very High', regulations: 'Strong gaming and entertainment industry focus' },
+      'South Korea': { demand: 'Very High', regulations: 'Advanced digital entertainment ecosystem' },
+      'USA': { demand: 'High', regulations: 'Growing applications in healthcare, education, and enterprise' }
+    }
+  },
+  {
+    id: 'digital-transformation-consultant',
+    title: 'Digital Transformation Consultant',
+    description: 'Help organizations adopt digital technologies and processes to improve business operations and customer experiences.',
+    educationRequired: "Bachelor's or Master's degree in Business, IT, or related field",
+    skills: ['Change management', 'Digital strategy', 'Process optimization', 'Project management', 'Data analysis'],
+    personalityTraits: ['Strategic thinker', 'Adaptable', 'Communicative', 'Problem-solver', 'Collaborative'],
+    averageSalary: {
+      'USA': '$100,000 - $160,000',
+      'UK': '£60,000 - £110,000',
+      'Canada': 'CA$90,000 - CA$140,000',
+      'UAE': 'AED350,000 - AED550,000',
+      'Singapore': 'S$100,000 - S$170,000',
+      'Global': '$90,000 - $140,000'
+    },
+    growthOutlook: 'Growing much faster than average',
+    icon: 'briefcase',
+    countries: ['USA', 'UK', 'Canada', 'UAE', 'Singapore'],
+    relevantFields: ['Business Consulting', 'Information Technology', 'Digital Strategy', 'Change Management'],
+    countrySpecificInfo: {
+      'UAE': { demand: 'Very High', regulations: 'Major governmental digital transformation initiatives' },
+      'Singapore': { demand: 'Very High', regulations: 'Smart Nation initiative driving digital adoption' },
+      'UK': { demand: 'High', regulations: 'Strong focus on digital government and public services' }
+    }
   }
 ];
 
@@ -467,6 +721,11 @@ export const countries = [
   { value: 'Canada', label: 'Canada', currency: 'CA$' },
   { value: 'Australia', label: 'Australia', currency: 'AU$' },
   { value: 'Germany', label: 'Germany', currency: '€' },
+  { value: 'Japan', label: 'Japan', currency: '¥' },
+  { value: 'Singapore', label: 'Singapore', currency: 'S$' },
+  { value: 'Switzerland', label: 'Switzerland', currency: 'CHF' },
+  { value: 'South Korea', label: 'South Korea', currency: '₩' },
+  { value: 'UAE', label: 'United Arab Emirates', currency: 'AED' },
   { value: 'Global', label: 'Global Average', currency: '$' }
 ];
 

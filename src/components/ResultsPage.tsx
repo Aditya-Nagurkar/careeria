@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Career, countries } from '../utils/careerData';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -78,6 +78,38 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
   
   const COLORS = ['#4a48de', '#8b5cf6', '#f06292', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#a855f7', '#ec4899'];
 
+  // Filter careers for the selected country
+  const filteredCareers = useMemo(() => {
+    return careers
+      .filter(career => career.countries.includes(selectedCountry))
+      .map(career => {
+        // Calculate match score based on personality traits and skills
+        const personalityMatch = career.personalityTraits.filter(trait =>
+          userProfile.personalityTraits.some(userTrait => 
+            userTrait.toLowerCase() === trait.toLowerCase()
+          )
+        ).length;
+        
+        const skillMatch = career.skills.filter(skill =>
+          userProfile.skills.some(userSkill =>
+            skill.toLowerCase().includes(userSkill.toLowerCase()) || 
+            userSkill.toLowerCase().includes(skill.toLowerCase())
+          )
+        ).length;
+        
+        // Calculate a weighted score (can be adjusted based on importance)
+        const matchScore = 
+          (personalityMatch / Math.max(career.personalityTraits.length, 1)) * 0.6 +
+          (skillMatch / Math.max(career.skills.length, 1)) * 0.4;
+        
+        return {
+          ...career,
+          matchScore: Math.round(matchScore * 100) // Convert to percentage
+        };
+      })
+      .sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0)); // Sort by match score
+  }, [careers, selectedCountry, userProfile]);
+
   // Get the country full name from the code
   const getCountryName = (code: string) => {
     const country = countries.find(c => c.value === code);
@@ -116,7 +148,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
             value="skills" 
             className="flex items-center gap-2 py-4 data-[state=active]:text-[#603CBA] data-[state=active]:border-b-2 data-[state=active]:border-[#603CBA]"
           >
-            {/* Fixed ChartLineIcon to use the imported component correctly */}
+            {/* Fixed to use inline SVG instead of ChartLineIcon */}
             <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 3v18h18"/>
               <path d="m19 9-5 5-4-4-3 3"/>
@@ -137,7 +169,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
               
               <div className="w-full sm:w-48">
                 <label htmlFor="country-select" className="block text-sm font-medium text-gray-700 mb-1">
-                  View salaries for
+                  View careers for
                 </label>
                 <Select 
                   value={selectedCountry} 
@@ -158,24 +190,39 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
             </div>
           </div>
           
-          <div className="grid grid-cols-1 gap-6">
-            {careers.map((career, index) => (
-              <div key={career.id} className={index === 0 ? "relative" : ""}>
-                {index === 0 && (
-                  <div className="md:hidden absolute top-0 right-0 left-0 bg-green-500 text-white text-center py-1 text-sm rounded-t-lg">
-                    Best Match
+          {filteredCareers.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6">
+              {filteredCareers.map((career, index) => (
+                <div key={career.id} className={index === 0 ? "relative" : ""}>
+                  {index === 0 && (
+                    <div className="md:hidden absolute top-0 right-0 left-0 bg-green-500 text-white text-center py-1 text-sm rounded-t-lg">
+                      Best Match
+                    </div>
+                  )}
+                  <div className={`mt-4 ${index === 0 ? "pt-6 md:pt-0" : ""}`}>
+                    <CareerCard 
+                      career={career} 
+                      rank={index} 
+                      country={selectedCountry}
+                    />
                   </div>
-                )}
-                <div className={`mt-4 ${index === 0 ? "pt-6 md:pt-0" : ""}`}>
-                  <CareerCard 
-                    career={career} 
-                    rank={index} 
-                    country={selectedCountry}
-                  />
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg p-8 text-center shadow-sm">
+              <p className="text-lg text-gray-600 mb-4">
+                No career matches found for {getCountryName(selectedCountry)}. Try selecting a different country.
+              </p>
+              <Button
+                onClick={() => setSelectedCountry('Global')}
+                variant="outline"
+                className="mx-auto border-[#603CBA] text-[#603CBA] hover:bg-[#603CBA]/10"
+              >
+                Show Global Careers
+              </Button>
+            </div>
+          )}
           
           <div className="mt-8 text-center">
             <p className="text-gray-600 mb-4">
