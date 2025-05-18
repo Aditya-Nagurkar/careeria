@@ -10,54 +10,20 @@ export interface UserProfile {
   country: string;
 }
 
-// This is a simple ML-like algorithm for career recommendations
+// Improved ML-like algorithm for career recommendations
 // In a real app, you would replace this with a more sophisticated model or API call
 export const getCareerRecommendations = (userProfile: UserProfile): Career[] => {
-  // Assign weights to different factors
+  // Assign weights to different factors - prioritizing personality and interests more
   const weights = {
-    education: 0.20,
-    specialization: 0.25,  // Increased the weight for specialization
-    personalityTraits: 0.25,
+    personalityTraits: 0.40,  // Increased weight for personality traits
     skills: 0.20,
-    interests: 0.10
+    specialization: 0.25,     // Maintained high weight for specialization
+    interests: 0.15           // Increased weight for interests
   };
 
   // Scoring function for each career
   const calculateMatchScore = (career: Career): number => {
     let score = 0;
-    
-    // Education match
-    const educationMap: { [key: string]: number } = {
-      'high-school': 1,
-      'associate': 2,
-      'bachelor': 3,
-      'master': 4,
-      'doctorate': 5
-    };
-    
-    const userEdLevel = educationMap[userProfile.education] || 1;
-    let careerEdLevel = 3; // Default to bachelor's
-    
-    if (career.educationRequired.toLowerCase().includes('high school')) {
-      careerEdLevel = 1;
-    } else if (career.educationRequired.toLowerCase().includes('associate')) {
-      careerEdLevel = 2;
-    } else if (career.educationRequired.toLowerCase().includes('bachelor')) {
-      careerEdLevel = 3;
-    } else if (career.educationRequired.toLowerCase().includes('master')) {
-      careerEdLevel = 4;
-    } else if (career.educationRequired.toLowerCase().includes('doctorate') || 
-               career.educationRequired.toLowerCase().includes('phd')) {
-      careerEdLevel = 5;
-    }
-    
-    // If user meets or exceeds education requirement
-    if (userEdLevel >= careerEdLevel) {
-      score += weights.education;
-    } else {
-      // Partial credit for being close
-      score += weights.education * (userEdLevel / careerEdLevel);
-    }
     
     // Specialization match - improved matching with higher weight
     if (userProfile.specialization && career.relevantFields.length > 0) {
@@ -83,59 +49,100 @@ export const getCareerRecommendations = (userProfile: UserProfile): Career[] => 
       }
     }
     
-    // Personality traits match - more nuanced matching
+    // Personality traits match - more sophisticated matching
     if (userProfile.personalityTraits.length > 0 && career.personalityTraits.length > 0) {
-      const personalityMatchCount = userProfile.personalityTraits.filter(trait => 
+      // Count exact matches with higher weight
+      const exactMatchCount = userProfile.personalityTraits.filter(trait => 
         career.personalityTraits.some(careerTrait => 
-          careerTrait.toLowerCase() === trait.toLowerCase() ||
-          careerTrait.toLowerCase().includes(trait.toLowerCase()) ||
-          trait.toLowerCase().includes(careerTrait.toLowerCase())
+          careerTrait.toLowerCase() === trait.toLowerCase()
         )
       ).length;
       
-      // Calculate match score as percentage of matched traits
-      const personalityMatchPercentage = personalityMatchCount / Math.min(
-        userProfile.personalityTraits.length,
-        career.personalityTraits.length
-      );
+      // Count partial matches with lower weight
+      const partialMatchCount = userProfile.personalityTraits.filter(trait => 
+        career.personalityTraits.some(careerTrait => 
+          careerTrait.toLowerCase().includes(trait.toLowerCase()) ||
+          trait.toLowerCase().includes(careerTrait.toLowerCase())
+        ) && !career.personalityTraits.some(careerTrait => 
+          careerTrait.toLowerCase() === trait.toLowerCase()
+        )
+      ).length;
       
-      score += personalityMatchPercentage * weights.personalityTraits;
+      // Calculate match score with different weights for exact and partial matches
+      const personalityMatchScore = 
+        (exactMatchCount * 1.0 + partialMatchCount * 0.5) / 
+        Math.max(userProfile.personalityTraits.length, career.personalityTraits.length);
+      
+      score += personalityMatchScore * weights.personalityTraits;
     }
     
     // Skills match - improved matching with better relevance scoring
     if (userProfile.skills.length > 0 && career.skills.length > 0) {
-      const skillsMatchCount = userProfile.skills.filter(skill => 
+      // Count exact matches with higher weight
+      const exactMatchCount = userProfile.skills.filter(skill => 
         career.skills.some(careerSkill => 
-          careerSkill.toLowerCase() === skill.toLowerCase() ||
-          careerSkill.toLowerCase().includes(skill.toLowerCase()) ||
-          skill.toLowerCase().includes(careerSkill.toLowerCase())
+          careerSkill.toLowerCase() === skill.toLowerCase()
         )
       ).length;
       
-      // Calculate match score based on percentage of matched skills
-      const skillsMatchPercentage = skillsMatchCount / Math.min(
-        userProfile.skills.length,
-        career.skills.length
-      );
+      // Count partial matches with lower weight
+      const partialMatchCount = userProfile.skills.filter(skill => 
+        career.skills.some(careerSkill => 
+          careerSkill.toLowerCase().includes(skill.toLowerCase()) ||
+          skill.toLowerCase().includes(careerSkill.toLowerCase())
+        ) && !career.skills.some(careerSkill => 
+          careerSkill.toLowerCase() === skill.toLowerCase()
+        )
+      ).length;
       
-      score += skillsMatchPercentage * weights.skills;
+      // Calculate match score with different weights for exact and partial matches
+      const skillsMatchScore = 
+        (exactMatchCount * 1.0 + partialMatchCount * 0.5) / 
+        Math.max(userProfile.skills.length, career.skills.length);
+      
+      score += skillsMatchScore * weights.skills;
     }
     
     // Interest match - more comprehensive keyword matching
     if (userProfile.interests.length > 0) {
-      const interestMatchCount = userProfile.interests.filter(interest => 
-        // Check title, description, and fields for interest keywords
-        career.title.toLowerCase().includes(interest.toLowerCase()) || 
-        career.description.toLowerCase().includes(interest.toLowerCase()) ||
-        career.relevantFields.some(field => field.toLowerCase().includes(interest.toLowerCase())) ||
-        career.skills.some(skill => skill.toLowerCase().includes(interest.toLowerCase()))
-      ).length;
+      let interestMatchScore = 0;
       
-      const interestMatchScore = userProfile.interests.length > 0
-        ? Math.min(interestMatchCount / userProfile.interests.length, 1) * weights.interests
-        : 0;
+      // Check for direct interest matches in various career attributes
+      for (const interest of userProfile.interests) {
+        // Check title (highest weight)
+        if (career.title.toLowerCase().includes(interest.toLowerCase())) {
+          interestMatchScore += 1.0;
+          continue; // Move to next interest if strong match found
+        }
+        
+        // Check relevant fields (high weight)
+        if (career.relevantFields.some(field => field.toLowerCase().includes(interest.toLowerCase()))) {
+          interestMatchScore += 0.8;
+          continue;
+        }
+        
+        // Check description (medium weight)
+        if (career.description.toLowerCase().includes(interest.toLowerCase())) {
+          interestMatchScore += 0.6;
+          continue;
+        }
+        
+        // Check skills (medium-low weight)
+        if (career.skills.some(skill => skill.toLowerCase().includes(interest.toLowerCase()))) {
+          interestMatchScore += 0.4;
+          continue;
+        }
+        
+        // Check personality traits (low weight)
+        if (career.personalityTraits.some(trait => trait.toLowerCase().includes(interest.toLowerCase()))) {
+          interestMatchScore += 0.2;
+          continue;
+        }
+      }
       
-      score += interestMatchScore;
+      // Normalize interest match score
+      interestMatchScore = interestMatchScore / userProfile.interests.length;
+      score += interestMatchScore * weights.interests;
     }
 
     // Country relevance - prioritize careers available in the user's country

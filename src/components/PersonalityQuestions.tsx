@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -64,7 +65,6 @@ const personalityQuestions: Question[] = [
       { value: 'detailed', label: 'Thorough and detailed', trait: 'detail-oriented' }
     ]
   },
-  // Adding more questions for better personality assessment
   {
     id: 'leadership',
     text: 'In a leadership role, I am likely to:',
@@ -109,6 +109,51 @@ const personalityQuestions: Question[] = [
       { value: 'balance', label: 'Finding balance and satisfaction', trait: 'balanced' },
       { value: 'growth', label: 'Learning and growing continuously', trait: 'growth-oriented' }
     ]
+  },
+  {
+    id: 'conflict',
+    text: 'When facing conflict in a team, I tend to:',
+    options: [
+      { value: 'mediate', label: 'Step in and help find common ground', trait: 'diplomatic' },
+      { value: 'avoid', label: 'Try to avoid confrontation when possible', trait: 'peaceful' },
+      { value: 'address', label: 'Address issues directly and honestly', trait: 'straightforward' }
+    ]
+  },
+  {
+    id: 'motivation',
+    text: 'What motivates me most in my work is:',
+    options: [
+      { value: 'recognition', label: 'Recognition and advancement opportunities', trait: 'ambitious' },
+      { value: 'meaningful', label: 'Doing something meaningful and valuable', trait: 'purpose-driven' },
+      { value: 'security', label: 'Stability and security', trait: 'security-focused' }
+    ]
+  },
+  {
+    id: 'time-management',
+    text: 'When managing my time, I typically:',
+    options: [
+      { value: 'structured', label: 'Follow a structured schedule', trait: 'organized' },
+      { value: 'flexible', label: 'Keep my schedule flexible and adapt as needed', trait: 'adaptable' },
+      { value: 'urgent', label: 'Focus on what seems most urgent first', trait: 'responsive' }
+    ]
+  },
+  {
+    id: 'teamwork',
+    text: 'In a team project, I typically:',
+    options: [
+      { value: 'lead', label: 'Take the lead and drive the work forward', trait: 'leader' },
+      { value: 'support', label: 'Support others and help where needed', trait: 'supportive' },
+      { value: 'specialist', label: 'Focus on my specialized part of the work', trait: 'specialist' }
+    ]
+  },
+  {
+    id: 'risk',
+    text: 'When it comes to taking risks, I am:',
+    options: [
+      { value: 'calculated', label: 'Willing to take calculated risks', trait: 'strategic' },
+      { value: 'cautious', label: 'Cautious and prefer safer options', trait: 'conservative' },
+      { value: 'bold', label: 'Comfortable with bold moves and uncertainty', trait: 'adventurous' }
+    ]
   }
 ];
 
@@ -125,7 +170,15 @@ const PersonalityQuestions: React.FC<PersonalityQuestionsProps> = ({ onComplete 
       [question.id]: trait
     }));
     
-    // No automatic advancement here
+    // Auto-advance to next question after selection
+    if (currentQuestion < personalityQuestions.length - 1) {
+      setCurrentQuestion(prev => prev + 1);
+    } else {
+      // Convert answers to traits array
+      const traits = Object.values(answers).filter(Boolean);
+      traits.push(trait); // Add the last answer
+      onComplete(traits);
+    }
   };
   
   const nextQuestion = () => {
@@ -195,16 +248,6 @@ const PersonalityQuestions: React.FC<PersonalityQuestionsProps> = ({ onComplete 
         >
           <ChevronLeft className="h-4 w-4" />
           <span>Back</span>
-        </Button>
-        
-        <Button
-          type="button"
-          onClick={nextQuestion}
-          disabled={!isAnswered}
-          className="bg-indigo-600 hover:bg-indigo-700 flex-1 sm:flex-none flex items-center justify-center"
-        >
-          <span>{currentQuestion === personalityQuestions.length - 1 ? 'Complete' : 'Next'}</span>
-          {currentQuestion !== personalityQuestions.length - 1 && <ChevronRight className="h-4 w-4 ml-1" />}
         </Button>
       </div>
     </div>

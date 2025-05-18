@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Career, countries } from '../utils/careerData';
 import { Button } from '@/components/ui/button';
@@ -19,21 +20,27 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
   const [activeTab, setActiveTab] = useState('careers');
   const [selectedCountry, setSelectedCountry] = useState(userProfile.country || 'USA');
   
-  // Calculate personality trait frequencies
+  // Calculate personality trait frequencies with improved accuracy
   const personalityData = userProfile.personalityTraits.reduce((acc: { [key: string]: number }, trait: string) => {
     acc[trait] = (acc[trait] || 0) + 1;
     return acc;
   }, {});
 
-  // Convert to chart data format and calculate percentages
-  const totalTraits = Object.values(personalityData).reduce((sum, count) => sum + count, 0);
-  const personalityChartData = Object.entries(personalityData).map(([name, value]) => ({
-    name,
-    value: (value / totalTraits) * 100
-  }));
+  // Convert to chart data format
+  const personalityChartData = Object.entries(personalityData)
+    .filter(([name, count]) => count > 0) // Filter out traits with zero count
+    .map(([name, count], index) => ({
+      name,
+      value: count
+    }));
+    
+  // Ensure the sum of values equals 100% for accurate visualization
+  const totalTraitCounts = personalityChartData.reduce((sum, item) => sum + item.value, 0);
+  personalityChartData.forEach(item => {
+    item.value = (item.value / totalTraitCounts) * 100;
+  });
 
   // Convert skills array to radar chart format
-  // Group similar skills and calculate proficiency
   const skillCategories = {
     Technical: ['programming', 'technical', 'analytical', 'mathematics', 'engineering'],
     Communication: ['communication', 'writing', 'speaking', 'presentation'],
@@ -52,7 +59,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
     };
   });
   
-  const COLORS = ['#4a48de', '#8b5cf6', '#f06292', '#f59e0b', '#10b981'];
+  const COLORS = ['#4a48de', '#8b5cf6', '#f06292', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#a855f7', '#ec4899'];
 
   // Get the country full name from the code
   const getCountryName = (code: string) => {
@@ -181,6 +188,10 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                     Social: { color: COLORS[2] },
                     Leadership: { color: COLORS[3] },
                     Practical: { color: COLORS[4] },
+                    Adaptable: { color: COLORS[5] },
+                    Resilient: { color: COLORS[6] },
+                    Organized: { color: COLORS[7] },
+                    Empathetic: { color: COLORS[8] },
                   }}
                 >
                   <PieChart>
@@ -189,7 +200,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name}\n${(percent * 100).toFixed(0)}%`}
+                      label={({ name, value }) => `${name}: ${Math.round(value)}%`}
                       outerRadius="80%"
                       fill="#8884d8"
                       dataKey="value"
@@ -220,15 +231,20 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                   
                   // Generate dynamic insight based on top traits
                   const traitDescriptions: { [key: string]: string } = {
-                    Analytical: "approach problems methodically and enjoy working with data",
-                    Creative: "think outside the box and come up with innovative solutions",
-                    Social: "work well with others and have strong interpersonal skills",
-                    Leadership: "take initiative and guide others effectively",
-                    Practical: "focus on realistic solutions and tangible results"
+                    analytical: "approach problems methodically and enjoy working with data",
+                    creative: "think outside the box and come up with innovative solutions",
+                    collaborative: "work well with others and have strong interpersonal skills",
+                    leader: "take initiative and guide others effectively",
+                    practical: "focus on realistic solutions and tangible results",
+                    adaptable: "adjust quickly to changing circumstances",
+                    resilient: "recover well from setbacks and challenges",
+                    independent: "work effectively with minimal supervision",
+                    detail-oriented: "pay close attention to specifics and thoroughness",
+                    empathetic: "understand and share the feelings of others"
                   };
 
                   const descriptions = topTraits
-                    .map(trait => traitDescriptions[trait] || `demonstrate strong ${trait.toLowerCase()} qualities`)
+                    .map(trait => traitDescriptions[trait.toLowerCase()] || `demonstrate strong ${trait.toLowerCase()} qualities`)
                     .join(", and ");
 
                   return `Your personality assessment reveals that you primarily ${descriptions}. ` +

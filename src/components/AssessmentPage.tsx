@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { UserProfile } from '../utils/aiRecommendation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import PersonalityQuestions from './PersonalityQuestions';
 
 interface AssessmentPageProps {
   onComplete: (userProfile: UserProfile) => void;
@@ -19,43 +20,10 @@ interface Question {
     label: string;
     trait: string;
   }[];
-  category: 'personality' | 'skills' | 'education' | 'specialization' | 'country';
+  category: 'skills' | 'specialization' | 'country' | 'interests';
 }
 
 const questions: Question[] = [
-  {
-    id: 'problem-solving',
-    text: 'When solving a complex problem at work or in studies, you prefer to:',
-    options: [
-      { value: 'analytical', label: 'Break it down into smaller parts and analyze each systematically', trait: 'analytical' },
-      { value: 'creative', label: 'Brainstorm creative solutions and experiment with new approaches', trait: 'creative' },
-      { value: 'collaborative', label: 'Discuss with peers or mentors to get different perspectives', trait: 'collaborative' },
-      { value: 'methodical', label: 'Follow established methods that have proven successful', trait: 'methodical' }
-    ],
-    category: 'personality'
-  },
-  {
-    id: 'work-environment',
-    text: 'Which work environment do you prefer?',
-    options: [
-      { value: 'structured', label: 'Structured with clear expectations and processes', trait: 'organized' },
-      { value: 'flexible', label: 'Flexible with room for creativity and innovation', trait: 'creative' },
-      { value: 'collaborative', label: 'Collaborative with lots of teamwork and discussion', trait: 'social' },
-      { value: 'independent', label: 'Independent with autonomy over your work', trait: 'independent' }
-    ],
-    category: 'personality'
-  },
-  {
-    id: 'decision-making',
-    text: 'When making important decisions, you typically:',
-    options: [
-      { value: 'data', label: 'Rely on data and logic', trait: 'analytical' },
-      { value: 'intuition', label: 'Trust your intuition and experience', trait: 'intuitive' },
-      { value: 'consult', label: 'Consult others before deciding', trait: 'collaborative' },
-      { value: 'principles', label: 'Consider your values and principles', trait: 'principled' }
-    ],
-    category: 'personality'
-  },
   {
     id: 'tech-comfort',
     text: 'How comfortable are you with learning new technologies?',
@@ -79,20 +47,8 @@ const questions: Question[] = [
     category: 'skills'
   },
   {
-    id: 'education',
-    text: 'What is your highest level of education?',
-    options: [
-      { value: 'high-school', label: 'High School Diploma or GED', trait: 'high-school' },
-      { value: 'associate', label: 'Associate Degree or Some College', trait: 'associate' },
-      { value: 'bachelor', label: 'Bachelor\'s Degree', trait: 'bachelor' },
-      { value: 'master', label: 'Master\'s Degree', trait: 'master' },
-      { value: 'doctorate', label: 'Doctorate or Professional Degree', trait: 'doctorate' }
-    ],
-    category: 'education'
-  },
-  {
     id: 'specialization',
-    text: 'What field did you specialize in during your education?',
+    text: 'What field are you most interested in or specialized in?',
     options: [
       { value: 'computer-science', label: 'Computer Science & IT', trait: 'computer-science' },
       { value: 'business', label: 'Business & Management', trait: 'business' },
@@ -104,6 +60,31 @@ const questions: Question[] = [
       { value: 'other', label: 'Other', trait: 'other' }
     ],
     category: 'specialization'
+  },
+  {
+    id: 'interests',
+    text: 'Which of these areas most interests you?',
+    options: [
+      { value: 'technology', label: 'Technology and Innovation', trait: 'technology' },
+      { value: 'creativity', label: 'Creative Arts and Design', trait: 'creativity' },
+      { value: 'helping', label: 'Helping and Supporting Others', trait: 'helping' },
+      { value: 'analysis', label: 'Analysis and Research', trait: 'analysis' },
+      { value: 'business', label: 'Business and Finance', trait: 'business' },
+      { value: 'nature', label: 'Nature and Environment', trait: 'nature' }
+    ],
+    category: 'interests'
+  },
+  {
+    id: 'work-style',
+    text: 'Which work style do you prefer?',
+    options: [
+      { value: 'hands-on', label: 'Hands-on, practical work', trait: 'hands-on' },
+      { value: 'analytical', label: 'Analytical, problem-solving work', trait: 'analytical' },
+      { value: 'creative', label: 'Creative, expressive work', trait: 'creative' },
+      { value: 'service', label: 'Service-oriented, helping others', trait: 'service' },
+      { value: 'leadership', label: 'Leadership, guiding teams', trait: 'leadership' }
+    ],
+    category: 'interests'
   },
   {
     id: 'country',
@@ -122,19 +103,17 @@ const questions: Question[] = [
   }
 ];
 
-// Reordering questions to put specialization before country
+// Reorder questions so specialization comes before country
 const reorderedQuestions = [...questions];
-const specialization = reorderedQuestions.splice(6, 1)[0];
-const country = reorderedQuestions.splice(6, 1)[0];
-reorderedQuestions.splice(6, 0, specialization);
-reorderedQuestions.push(country);
 
 const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, { trait: string, category: string }>>({});
+  const [showPersonalityQuestions, setShowPersonalityQuestions] = useState(false);
+  const [personalityTraits, setPersonalityTraits] = useState<string[]>([]);
   
   const handleAnswer = (value: string) => {
-    const question = reorderedQuestions[currentQuestion];
+    const question = reorderedQuestions[currentStep];
     const trait = question.options.find(opt => opt.value === value)?.trait || '';
     
     setAnswers(prev => ({
@@ -142,56 +121,64 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
       [question.id]: { trait, category: question.category }
     }));
     
-    // We removed the automatic advancement here
+    // Automatically advance to next question after selection
+    if (currentStep < reorderedQuestions.length - 1) {
+      setCurrentStep(prev => prev + 1);
+    } else {
+      // Show personality questions as the final step
+      setShowPersonalityQuestions(true);
+    }
   };
   
-  const nextQuestion = () => {
-    if (currentQuestion < reorderedQuestions.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
-    } else {
-      // Process answers and complete assessment
-      const profile: UserProfile = {
-        education: Object.entries(answers)
-          .filter(([_, data]) => data.category === 'education')
-          .map(([_, data]) => data.trait)[0] || '',
-        specialization: Object.entries(answers)
-          .filter(([_, data]) => data.category === 'specialization')
-          .map(([_, data]) => data.trait)[0] || '',
-        personalityTraits: Object.entries(answers)
-          .filter(([_, data]) => data.category === 'personality')
-          .map(([_, data]) => data.trait),
-        skills: Object.entries(answers)
-          .filter(([_, data]) => data.category === 'skills')
-          .map(([_, data]) => data.trait),
-        interests: [], // This would need to be populated based on additional questions
-        country: Object.entries(answers)
-          .filter(([_, data]) => data.category === 'country')
-          .map(([_, data]) => data.trait)[0] || 'United States'
-      };
-      
-      onComplete(profile);
-    }
+  const handlePersonalityComplete = (traits: string[]) => {
+    setPersonalityTraits(traits);
+    
+    // Process all answers and complete assessment
+    const profile: UserProfile = {
+      education: 'bachelor', // Default value since we removed education questions
+      specialization: Object.entries(answers)
+        .filter(([_, data]) => data.category === 'specialization')
+        .map(([_, data]) => data.trait)[0] || '',
+      personalityTraits: traits,
+      skills: Object.entries(answers)
+        .filter(([_, data]) => data.category === 'skills')
+        .map(([_, data]) => data.trait),
+      interests: Object.entries(answers)
+        .filter(([_, data]) => data.category === 'interests')
+        .map(([_, data]) => data.trait),
+      country: Object.entries(answers)
+        .filter(([_, data]) => data.category === 'country')
+        .map(([_, data]) => data.trait)[0] || 'United States'
+    };
+    
+    onComplete(profile);
   };
   
   const prevQuestion = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(prev => prev - 1);
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1);
     }
   };
   
-  const question = reorderedQuestions[currentQuestion];
+  // If showing personality questions
+  if (showPersonalityQuestions) {
+    return <PersonalityQuestions onComplete={handlePersonalityComplete} />;
+  }
+  
+  const question = reorderedQuestions[currentStep];
   const isAnswered = answers[question.id] !== undefined;
-  const progress = Math.round(((currentQuestion) / reorderedQuestions.length) * 100);
+  const progress = Math.round((currentStep / reorderedQuestions.length) * 100);
   
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <div className="text-center mb-10">
         <h1 className="text-3xl font-bold">Career Assessment</h1>
+        <p className="text-gray-600 mt-2">Let's find the perfect career match for you</p>
       </div>
       
       <div className="bg-white rounded-lg p-6 shadow-sm">
         <div className="flex justify-between mb-2 text-sm text-gray-500">
-          <span>Question {currentQuestion + 1} of {reorderedQuestions.length}</span>
+          <span>Question {currentStep + 1} of {reorderedQuestions.length}</span>
           <span>{progress}% Complete</span>
         </div>
         
@@ -236,20 +223,11 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
           <Button
             variant="outline"
             onClick={prevQuestion}
-            disabled={currentQuestion === 0}
+            disabled={currentStep === 0}
             className="flex items-center justify-center gap-1 w-full sm:w-auto"
           >
             <ChevronLeft className="h-4 w-4" />
             <span>Previous Question</span>
-          </Button>
-          
-          <Button
-            onClick={nextQuestion}
-            disabled={!isAnswered}
-            className="bg-[#603CBA] hover:bg-[#4e309e] text-white flex items-center justify-center gap-1 w-full sm:w-auto"
-          >
-            <span>{currentQuestion === reorderedQuestions.length - 1 ? 'Complete Assessment' : 'Next Question'}</span>
-            {currentQuestion !== reorderedQuestions.length - 1 && <ChevronRight className="h-4 w-4 ml-1" />}
           </Button>
         </div>
       </div>
