@@ -29,33 +29,50 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
   // Convert to chart data format
   const personalityChartData = Object.entries(personalityData)
     .filter(([name, count]) => count > 0) // Filter out traits with zero count
-    .map(([name, count], index) => ({
+    .map(([name, count]) => ({
       name,
       value: count
     }));
     
-  // Ensure the sum of values equals 100% for accurate visualization
+  // Calculate the total for proper percentage distribution
   const totalTraitCounts = personalityChartData.reduce((sum, item) => sum + item.value, 0);
-  personalityChartData.forEach(item => {
-    item.value = (item.value / totalTraitCounts) * 100;
-  });
+  
+  // Create a new array with correctly calculated percentages to ensure the pie chart is accurate
+  const normalizedPersonalityData = personalityChartData.map(item => ({
+    name: item.name,
+    value: Number(((item.value / totalTraitCounts) * 100).toFixed(1))
+  }));
 
-  // Convert skills array to radar chart format
+  // Convert skills array to radar chart format with more categories
   const skillCategories = {
-    Technical: ['programming', 'technical', 'analytical', 'mathematics', 'engineering'],
-    Communication: ['communication', 'writing', 'speaking', 'presentation'],
-    Leadership: ['leadership', 'management', 'delegation', 'strategy'],
-    Adaptability: ['adaptability', 'flexibility', 'learning', 'innovation'],
-    'Problem Solving': ['problem solving', 'critical thinking', 'decision making', 'research']
+    Technical: ['programming', 'technical', 'analytical', 'mathematics', 'engineering', 'data', 'computing'],
+    Communication: ['communication', 'writing', 'speaking', 'presentation', 'negotiation', 'persuasion'],
+    Leadership: ['leadership', 'management', 'delegation', 'strategy', 'motivation', 'mentoring'],
+    Adaptability: ['adaptability', 'flexibility', 'learning', 'innovation', 'resilience', 'change'],
+    'Problem Solving': ['problem solving', 'critical thinking', 'decision making', 'research', 'troubleshooting'],
+    Creativity: ['creative', 'design', 'innovation', 'artistic', 'conceptual', 'imagination'],
+    'Interpersonal': ['teamwork', 'empathy', 'collaboration', 'networking', 'relationship building']
   };
 
+  // More sophisticated skill matching algorithm
   const skillsChartData = Object.entries(skillCategories).map(([subject, keywords]) => {
-    const matchingSkills = userProfile.skills.filter(skill =>
-      keywords.some(keyword => skill.toLowerCase().includes(keyword))
-    );
+    // Check how many keywords match each skill
+    const matchCount = userProfile.skills.reduce((count, skill) => {
+      const skillLower = skill.toLowerCase();
+      // If any keyword is found in the skill, count it as a match
+      if (keywords.some(keyword => skillLower.includes(keyword.toLowerCase()))) {
+        return count + 1;
+      }
+      return count;
+    }, 0);
+    
+    // Calculate the percentage with more granularity
+    const maxPossibleMatches = Math.min(keywords.length, userProfile.skills.length);
+    const score = maxPossibleMatches > 0 ? (matchCount / maxPossibleMatches) * 100 : 0;
+    
     return {
       subject,
-      A: (matchingSkills.length / keywords.length) * 100 // Calculate percentage based on matches
+      A: Math.min(Math.round(score), 100) // Cap at 100% and round for cleaner display
     };
   });
   
@@ -182,7 +199,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
               This chart shows the distribution of your personality traits based on your assessment responses.
             </p>
             
-            {/* Improved mobile responsiveness for the pie chart */}
+            {/* Dynamic pie chart with improved visualization */}
             <div className="flex justify-center w-full items-center h-auto">
               <div className="w-full sm:max-w-[500px] aspect-square">
                 <ChartContainer 
@@ -200,17 +217,25 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                 >
                   <PieChart>
                     <Pie
-                      data={personalityChartData}
+                      data={normalizedPersonalityData}
                       cx="50%"
                       cy="50%"
-                      labelLine={false}
-                      label={({ name, value }) => `${name}: ${Math.round(value)}%`}
+                      labelLine={true}
+                      label={({ name, value }) => `${name}: ${value}%`}
                       outerRadius="80%"
                       fill="#8884d8"
                       dataKey="value"
+                      animationBegin={0}
+                      animationDuration={1000}
+                      paddingAngle={1}
                     >
-                      {personalityChartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      {normalizedPersonalityData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={COLORS[index % COLORS.length]}
+                          stroke="#fff"
+                          strokeWidth={1}
+                        />
                       ))}
                     </Pie>
                     <ChartTooltip
@@ -268,19 +293,29 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
               This radar chart visualizes your strengths across different skill categories.
             </p>
             
-            {/* Improved mobile responsiveness for the radar chart */}
+            {/* Dynamic radar chart with improved visualization */}
             <div className="flex justify-center w-full">
               <div className="w-full sm:max-w-[500px] aspect-square">
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart cx="50%" cy="50%" outerRadius="70%" data={skillsChartData}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="subject" />
+                    <PolarGrid stroke="#e5e5e5" />
+                    <PolarAngleAxis 
+                      dataKey="subject" 
+                      tick={{ fill: '#444', fontSize: 12 }}
+                      axisLine={{ stroke: '#ccc', strokeWidth: 1 }}
+                    />
                     <Radar
                       name="Skills"
                       dataKey="A"
                       stroke="#8b5cf6"
                       fill="#8b5cf6"
                       fillOpacity={0.6}
+                      animationDuration={1000}
+                      animationEasing="ease-out"
+                    />
+                    <ChartTooltip 
+                      formatter={(value) => [`${value}%`, 'Skill Proficiency']}
+                      contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', border: '1px solid #ccc' }}
                     />
                   </RadarChart>
                 </ResponsiveContainer>
