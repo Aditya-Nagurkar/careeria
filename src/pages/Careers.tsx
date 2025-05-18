@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -32,7 +31,8 @@ const Careers = () => {
       filtered = filtered.filter(career => career.countries.includes(selectedCountry));
     }
     
-    return filtered;
+    // Limit to max 30 results to improve performance
+    return filtered.slice(0, 30);
   }, [searchTerm, selectedCountry]);
 
   return (
@@ -93,6 +93,7 @@ const Careers = () => {
                 Found <span className="font-medium">{filteredCareers.length}</span> careers
                 {selectedCountry !== 'Global' && ` in ${countries.find(c => c.value === selectedCountry)?.label || selectedCountry}`}
                 {searchTerm && ` matching "${searchTerm}"`}
+                {filteredCareers.length >= 30 && " (showing top 30)"}
               </p>
             </div>
 
