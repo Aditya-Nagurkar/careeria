@@ -114,14 +114,19 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
   
   const handleAnswer = (value: string) => {
     const question = reorderedQuestions[currentStep];
-    const trait = question.options.find(opt => opt.value === value)?.trait || '';
+    const selectedOption = question.options.find(opt => opt.value === value);
     
-    setAnswers(prev => ({
-      ...prev,
-      [question.id]: { trait, category: question.category }
-    }));
-    
-    // Automatically advance to next question after selection
+    if (selectedOption) {
+      const trait = selectedOption.trait;
+      
+      setAnswers(prev => ({
+        ...prev,
+        [question.id]: { trait, category: question.category }
+      }));
+    }
+  };
+
+  const nextQuestion = () => {
     if (currentStep < reorderedQuestions.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
@@ -228,6 +233,15 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ onComplete }) => {
           >
             <ChevronLeft className="h-4 w-4" />
             <span>Previous Question</span>
+          </Button>
+          
+          <Button
+            onClick={nextQuestion}
+            disabled={!isAnswered}
+            className="flex items-center justify-center gap-1 w-full sm:w-auto bg-[#603CBA] hover:bg-[#4e309e]"
+          >
+            <span>Next Question</span>
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </div>

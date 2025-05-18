@@ -169,16 +169,6 @@ const PersonalityQuestions: React.FC<PersonalityQuestionsProps> = ({ onComplete 
       ...prev,
       [question.id]: trait
     }));
-    
-    // Auto-advance to next question after selection
-    if (currentQuestion < personalityQuestions.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
-    } else {
-      // Convert answers to traits array
-      const traits = Object.values(answers).filter(Boolean);
-      traits.push(trait); // Add the last answer
-      onComplete(traits);
-    }
   };
   
   const nextQuestion = () => {
@@ -217,7 +207,9 @@ const PersonalityQuestions: React.FC<PersonalityQuestionsProps> = ({ onComplete 
       <h3 className="text-xl font-medium text-gray-800 mt-4">{question.text}</h3>
       
       <RadioGroup 
-        value={answers[question.id] ? question.options.find(opt => opt.trait === answers[question.id])?.value : ''} 
+        value={answers[question.id] ? 
+          question.options.find(opt => opt.trait === answers[question.id])?.value || '' : 
+          ''} 
         onValueChange={handleAnswer}
         className="space-y-3 mt-4"
       >
@@ -248,6 +240,16 @@ const PersonalityQuestions: React.FC<PersonalityQuestionsProps> = ({ onComplete 
         >
           <ChevronLeft className="h-4 w-4" />
           <span>Back</span>
+        </Button>
+        
+        <Button
+          type="button"
+          onClick={nextQuestion}
+          disabled={!isAnswered}
+          className="flex items-center gap-1 flex-1 sm:flex-none bg-indigo-600 hover:bg-indigo-700"
+        >
+          <span>{currentQuestion === personalityQuestions.length - 1 ? 'Complete' : 'Next'}</span>
+          <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
     </div>
