@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Career, countries } from '../utils/careerData';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Briefcase, Brain, ChartLineIcon } from 'lucide-react';
+import { ArrowLeft, Briefcase, Brain } from 'lucide-react';
 import { UserProfile } from '../utils/aiRecommendation';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
@@ -99,7 +99,11 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
             value="skills" 
             className="flex items-center gap-2 py-4 data-[state=active]:text-[#603CBA] data-[state=active]:border-b-2 data-[state=active]:border-[#603CBA]"
           >
-            <ChartLineIcon className="h-5 w-5" />
+            {/* Fixed ChartLineIcon to use the imported component correctly */}
+            <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 3v18h18"/>
+              <path d="m19 9-5 5-4-4-3 3"/>
+            </svg>
             Skills
           </TabsTrigger>
         </TabsList>
@@ -191,7 +195,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                     Adaptable: { color: COLORS[5] },
                     Resilient: { color: COLORS[6] },
                     Organized: { color: COLORS[7] },
-                    Empathetic: { color: COLORS[8] },
+                    Empathetic: { color: COLORS[8] }
                   }}
                 >
                   <PieChart>
@@ -223,7 +227,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                 {(() => {
                   // Sort personality traits by frequency
                   const sortedTraits = Object.entries(personalityData)
-                    .sort(([,a], [,b]) => b - a)
+                    .sort(([, a], [, b]) => b - a)
                     .map(([trait]) => trait);
 
                   // Get top 3 traits
@@ -239,7 +243,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                     adaptable: "adjust quickly to changing circumstances",
                     resilient: "recover well from setbacks and challenges",
                     independent: "work effectively with minimal supervision",
-                    detail-oriented: "pay close attention to specifics and thoroughness",
+                    "detail-oriented": "pay close attention to specifics and thoroughness",
                     empathetic: "understand and share the feelings of others"
                   };
 
@@ -294,7 +298,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                   
                   // Get top personality traits
                   const topTraits = Object.entries(personalityData)
-                    .sort(([,a], [,b]) => b - a)
+                    .sort(([, a], [, b]) => b - a)
                     .slice(0, 2)
                     .map(([trait]) => trait.toLowerCase());
                   
