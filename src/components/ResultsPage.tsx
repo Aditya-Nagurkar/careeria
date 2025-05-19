@@ -19,22 +19,53 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
   const [activeTab, setActiveTab] = useState('careers');
   const [selectedCountry, setSelectedCountry] = useState(userProfile.country || 'USA');
   
-  // Convert personality traits directly to chart data
-  const personalityChartData = userProfile.personalityTraits.map(trait => ({
-    name: trait,
-    value: 1
-  }));
+  // Ensure we have exactly 6 personality traits or pad with defaults if needed
+  const getPersonalityData = () => {
+    const defaultTraits = ['Analytical', 'Creative', 'Detail-oriented', 'Leadership', 'Adaptable', 'Collaborative'];
+    const traits = [...userProfile.personalityTraits];
+    
+    // If we have more than 6, take only the first 6
+    if (traits.length > 6) {
+      return traits.slice(0, 6);
+    }
+    
+    // If we have less than 6, add some defaults
+    while (traits.length < 6) {
+      const missing = defaultTraits.find(dt => !traits.includes(dt));
+      if (missing) traits.push(missing);
+      else break; // Safety check
+    }
+    
+    return traits;
+  };
   
-  // Calculate the total for proper percentage distribution
-  const totalTraitCounts = personalityChartData.length;
+  // Calculate personality trait percentages dynamically
+  const personalityChartData = useMemo(() => {
+    const traits = getPersonalityData();
+    const totalTraits = traits.length;
+    
+    // Assign different weights to traits based on position (first ones are more important)
+    return traits.map((trait, index) => {
+      // Decreasing weights for traits (first ones are more important)
+      const weight = Math.max(30 - index * 3, 10); // Weights from 30% down to 10%
+      return {
+        name: trait,
+        value: weight
+      };
+    });
+  }, [userProfile.personalityTraits]);
   
-  // Create a new array with correctly calculated percentages
-  const normalizedPersonalityData = personalityChartData.map(item => ({
-    name: item.name,
-    value: Number(((item.value / totalTraitCounts) * 100).toFixed(1))
-  }));
+  // Normalize percentages to ensure they add up to 100%
+  const normalizedPersonalityData = useMemo(() => {
+    const total = personalityChartData.reduce((sum, item) => sum + item.value, 0);
+    
+    return personalityChartData.map(item => ({
+      name: item.name,
+      value: Number(((item.value / total) * 100).toFixed(1))
+    }));
+  }, [personalityChartData]);
 
-  // Improved skill categories with more precise matching
+  // Dynamic skill categories with more precise matching
   const skillCategories = {
     Technical: ['programming', 'coding', 'development', 'technical', 'engineering', 'data', 'computing', 'software', 'hardware', 'analysis'],
     Communication: ['communication', 'writing', 'speaking', 'presentation', 'negotiation', 'persuasion', 'language', 'verbal', 'documentation'],
@@ -44,52 +75,54 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
     Creativity: ['creative', 'design', 'innovation', 'artistic', 'conceptual', 'imagination', 'originality', 'visualization']
   };
 
-  // Improved skill matching algorithm for better radar chart visualization
-  const skillsChartData = Object.entries(skillCategories).map(([subject, keywords]) => {
-    // Create a scoring system for each skill category
-    let score = 0;
-    const maxScore = keywords.length;
-    
-    // Score each user skill against this category
-    userProfile.skills.forEach(userSkill => {
-      const userSkillLower = userSkill.toLowerCase();
+  // Improved radar chart data calculation
+  const skillsChartData = useMemo(() => {
+    return Object.entries(skillCategories).map(([subject, keywords]) => {
+      // Create a scoring system for each skill category
+      let score = 0;
+      const maxScore = keywords.length;
       
-      // Check for exact or partial matches
-      const exactMatch = keywords.some(keyword => 
-        userSkillLower === keyword || 
-        userSkillLower.includes(` ${keyword} `) || 
-        userSkillLower.startsWith(`${keyword} `) || 
-        userSkillLower.endsWith(` ${keyword}`)
-      );
+      // Score each user skill against this category
+      userProfile.skills.forEach(userSkill => {
+        const userSkillLower = userSkill.toLowerCase();
+        
+        // Check for exact or partial matches
+        const exactMatch = keywords.some(keyword => 
+          userSkillLower === keyword || 
+          userSkillLower.includes(` ${keyword} `) || 
+          userSkillLower.startsWith(`${keyword} `) || 
+          userSkillLower.endsWith(` ${keyword}`)
+        );
+        
+        const partialMatch = keywords.some(keyword => 
+          userSkillLower.includes(keyword) || 
+          keyword.includes(userSkillLower)
+        );
+        
+        if (exactMatch) {
+          score += 1;
+        } else if (partialMatch) {
+          score += 0.5;
+        }
+      });
       
-      const partialMatch = keywords.some(keyword => 
-        userSkillLower.includes(keyword) || 
-        keyword.includes(userSkillLower)
-      );
+      // Ensure we have a minimum baseline for visualization
+      // and that all categories have some value for better radar chart display
+      const minBaseScore = 15;
+      const maxBaseScore = 95;
       
-      if (exactMatch) {
-        score += 1;
-      } else if (partialMatch) {
-        score += 0.5;
-      }
+      // Scale the score to a percentage between minBaseScore and maxBaseScore
+      // This ensures the radar chart has a good shape instead of just a line
+      const calculatedScore = (score / maxScore) * (maxBaseScore - minBaseScore) + minBaseScore;
+      
+      return {
+        subject,
+        value: Math.round(calculatedScore)
+      };
     });
-    
-    // Ensure minimum score value for better radar chart visualization
-    const minBaseScore = 20;
-    const calculatedScore = (score / maxScore) * 100;
-    const percentScore = Math.max(minBaseScore, Math.round(calculatedScore));
-    
-    return {
-      subject,
-      A: percentScore
-    };
-  });
+  }, [userProfile.skills]);
   
-  // Sort skills by highest scores
-  const topSkillsChartData = [...skillsChartData]
-    .sort((a, b) => b.A - a.A);
-  
-  const COLORS = ['#4a48de', '#8b5cf6', '#f06292', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#ef4444', '#14b8a6', '#f97316', '#64748b'];
+  const COLORS = ['#4a48de', '#8b5cf6', '#f06292', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#ef4444', '#14b8a6', '#f97316'];
 
   // Filter careers for the selected country
   const filteredCareers = useMemo(() => {
@@ -259,12 +292,12 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
               This chart shows your key personality traits identified in the assessment.
             </p>
             
-            {/* Pie chart showing personality traits directly */}
+            {/* Regular pie chart showing personality traits with percentages */}
             <div className="flex justify-center w-full items-center h-auto">
               <div className="w-full sm:max-w-[500px] aspect-square">
                 <ChartContainer 
                   config={Object.fromEntries(
-                    personalityChartData.map((item, index) => [
+                    normalizedPersonalityData.map((item, index) => [
                       item.name, 
                       { color: COLORS[index % COLORS.length] }
                     ])
@@ -275,41 +308,23 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                       data={normalizedPersonalityData}
                       cx="50%"
                       cy="50%"
-                      labelLine={false}
-                      label={({ name, value, cx, cy, midAngle, innerRadius, outerRadius }) => {
-                        const RADIAN = Math.PI / 180;
-                        const radius = 25 + innerRadius + (outerRadius - innerRadius);
-                        const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                        const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                        
-                        return (
-                          <text
-                            x={x}
-                            y={y}
-                            textAnchor={x > cx ? "start" : "end"}
-                            dominantBaseline="central"
-                            fill="#333"
-                            fontSize={14}
-                            fontWeight={500}
-                          >
-                            {name}
-                          </text>
-                        );
-                      }}
-                      outerRadius="70%"
-                      innerRadius="40%"
+                      labelLine={true}
+                      outerRadius={130}
                       fill="#8884d8"
                       dataKey="value"
+                      nameKey="name"
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                       animationBegin={0}
                       animationDuration={1200}
-                      paddingAngle={5}
+                      paddingAngle={2}
                     >
                       {normalizedPersonalityData.map((entry, index) => (
                         <Cell 
                           key={`cell-${index}`} 
                           fill={COLORS[index % COLORS.length]}
                           stroke="#fff"
-                          strokeWidth={2}
+                          strokeWidth={1}
+                          className="hover:opacity-80 transition-opacity"
                         />
                       ))}
                     </Pie>
@@ -370,7 +385,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
               This chart visualizes your skill categories based on your assessment.
             </p>
             
-            {/* Improved radar chart with better axis and visualization */}
+            {/* Improved Radar chart with better visualization */}
             <div className="flex justify-center w-full">
               <div className="w-full sm:max-w-[500px] aspect-square">
                 <ResponsiveContainer width="100%" height="100%">
@@ -378,7 +393,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                     cx="50%" 
                     cy="50%" 
                     outerRadius="70%" 
-                    data={topSkillsChartData}
+                    data={skillsChartData}
                   >
                     <PolarGrid stroke="#e5e5e5" />
                     <PolarAngleAxis 
@@ -388,7 +403,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                     />
                     <Radar
                       name="Skills"
-                      dataKey="A"
+                      dataKey="value"
                       stroke="#8b5cf6"
                       fill="#8b5cf6"
                       fillOpacity={0.6}
@@ -410,7 +425,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                 {(() => {
                   // Get top skills categories (those with highest percentages)
                   const topSkills = [...skillsChartData]
-                    .sort((a, b) => b.A - a.A)
+                    .sort((a, b) => b.value - a.value)
                     .slice(0, 3)
                     .map(item => item.subject);
                   
