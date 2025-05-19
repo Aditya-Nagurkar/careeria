@@ -19,62 +19,14 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
   const [activeTab, setActiveTab] = useState('careers');
   const [selectedCountry, setSelectedCountry] = useState(userProfile.country || 'USA');
   
-  // Group similar personality traits to reduce pie chart segments
-  const groupPersonalityTraits = (traits: string[]): { [key: string]: number } => {
-    const traitGroups: { [key: string]: string[] } = {
-      "Analytical": ["analytical", "logical", "methodical", "detail-oriented", "research"],
-      "Creative": ["creative", "innovative", "artistic", "imaginative", "design"],
-      "Leadership": ["leader", "leadership", "decisive", "commanding", "management"],
-      "Social": ["social", "collaborative", "teamwork", "interpersonal", "communication"],
-      "Adaptability": ["adaptable", "flexible", "versatile", "resilient", "agile"],
-      "Self-Motivated": ["self-motivated", "driven", "proactive", "ambitious", "determined"]
-    };
-    
-    const groupedData: { [key: string]: number } = {};
-    
-    // Initialize all groups with zero
-    Object.keys(traitGroups).forEach(group => {
-      groupedData[group] = 0;
-    });
-    
-    // Count traits by group
-    traits.forEach(trait => {
-      let assigned = false;
-      const traitLower = trait.toLowerCase();
-      
-      // Check if trait belongs to any group
-      Object.entries(traitGroups).forEach(([group, keywords]) => {
-        if (keywords.some(keyword => traitLower.includes(keyword) || keyword.includes(traitLower))) {
-          groupedData[group] += 1;
-          assigned = true;
-        }
-      });
-      
-      // If trait doesn't fit any group, add to "Other"
-      if (!assigned) {
-        if (!groupedData["Other"]) {
-          groupedData["Other"] = 0;
-        }
-        groupedData["Other"] += 1;
-      }
-    });
-    
-    // Remove groups with zero count
-    return Object.fromEntries(Object.entries(groupedData).filter(([_, value]) => value > 0));
-  };
+  // Convert personality traits directly to chart data
+  const personalityChartData = userProfile.personalityTraits.map(trait => ({
+    name: trait,
+    value: 1
+  }));
   
-  // Process personality trait data with grouping
-  const personalityData = groupPersonalityTraits(userProfile.personalityTraits);
-  
-  // Convert to chart data format
-  const personalityChartData = Object.entries(personalityData)
-    .map(([name, count]) => ({
-      name,
-      value: count
-    }));
-    
   // Calculate the total for proper percentage distribution
-  const totalTraitCounts = personalityChartData.reduce((sum, item) => sum + item.value, 0);
+  const totalTraitCounts = personalityChartData.length;
   
   // Create a new array with correctly calculated percentages
   const normalizedPersonalityData = personalityChartData.map(item => ({
@@ -92,11 +44,11 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
     Creativity: ['creative', 'design', 'innovation', 'artistic', 'conceptual', 'imagination', 'originality', 'visualization']
   };
 
-  // More accurate skill matching algorithm
+  // Improved skill matching algorithm for better radar chart visualization
   const skillsChartData = Object.entries(skillCategories).map(([subject, keywords]) => {
     // Create a scoring system for each skill category
     let score = 0;
-    const maxScore = Math.min(keywords.length, userProfile.skills.length);
+    const maxScore = keywords.length;
     
     // Score each user skill against this category
     userProfile.skills.forEach(userSkill => {
@@ -122,8 +74,10 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
       }
     });
     
-    // Calculate percentage score relative to maximum possible
-    const percentScore = maxScore > 0 ? Math.min(Math.round((score / maxScore) * 100), 100) : 0;
+    // Ensure minimum score value for better radar chart visualization
+    const minBaseScore = 20;
+    const calculatedScore = (score / maxScore) * 100;
+    const percentScore = Math.max(minBaseScore, Math.round(calculatedScore));
     
     return {
       subject,
@@ -131,12 +85,11 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
     };
   });
   
-  // Limit to top 5 skill categories with highest scores
+  // Sort skills by highest scores
   const topSkillsChartData = [...skillsChartData]
-    .sort((a, b) => b.A - a.A)
-    .slice(0, 5);
+    .sort((a, b) => b.A - a.A);
   
-  const COLORS = ['#4a48de', '#8b5cf6', '#f06292', '#f59e0b', '#10b981', '#06b6d4'];
+  const COLORS = ['#4a48de', '#8b5cf6', '#f06292', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#ef4444', '#14b8a6', '#f97316', '#64748b'];
 
   // Filter careers for the selected country
   const filteredCareers = useMemo(() => {
@@ -303,21 +256,19 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <h2 className="text-2xl font-semibold mb-4">Your Personality Profile</h2>
             <p className="text-gray-600 mb-8">
-              This chart shows the key personality traits identified in your assessment.
+              This chart shows your key personality traits identified in the assessment.
             </p>
             
-            {/* Improved pie chart with fewer segments */}
+            {/* Pie chart showing personality traits directly */}
             <div className="flex justify-center w-full items-center h-auto">
               <div className="w-full sm:max-w-[500px] aspect-square">
                 <ChartContainer 
-                  config={{
-                    Analytical: { color: COLORS[0] },
-                    Creative: { color: COLORS[1] },
-                    Leadership: { color: COLORS[2] },
-                    Social: { color: COLORS[3] },
-                    Adaptability: { color: COLORS[4] },
-                    "Self-Motivated": { color: COLORS[5] }
-                  }}
+                  config={Object.fromEntries(
+                    personalityChartData.map((item, index) => [
+                      item.name, 
+                      { color: COLORS[index % COLORS.length] }
+                    ])
+                  )}
                 >
                   <PieChart>
                     <Pie
@@ -331,7 +282,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                         const x = cx + radius * Math.cos(-midAngle * RADIAN);
                         const y = cy + radius * Math.sin(-midAngle * RADIAN);
                         
-                        return value > 10 ? (
+                        return (
                           <text
                             x={x}
                             y={y}
@@ -341,9 +292,9 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                             fontSize={14}
                             fontWeight={500}
                           >
-                            {name} {value}%
+                            {name}
                           </text>
-                        ) : null;
+                        );
                       }}
                       outerRadius="70%"
                       innerRadius="40%"
@@ -374,32 +325,38 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
               <h3 className="text-lg font-medium mb-2">What This Means</h3>
               <p className="text-gray-600">
                 {(() => {
-                  // Sort personality traits by frequency
-                  const sortedTraits = Object.entries(personalityData)
-                    .sort(([, a], [, b]) => b - a)
-                    .map(([trait]) => trait);
-
-                  // Get top 3 traits
-                  const topTraits = sortedTraits.slice(0, 3);
+                  // Get top 3 traits for messaging
+                  const topTraits = userProfile.personalityTraits.slice(0, 3);
                   
                   // Generate dynamic insight based on top traits
                   const traitDescriptions: { [key: string]: string } = {
-                    "Analytical": "approach problems methodically and enjoy working with data",
-                    "Creative": "think outside the box and come up with innovative solutions",
-                    "Social": "work well with others and have strong interpersonal skills",
-                    "Leadership": "take initiative and guide others effectively",
-                    "Adaptability": "adjust quickly to changing circumstances",
-                    "Self-Motivated": "drive projects forward with minimal supervision"
+                    "analytical": "approach problems methodically and enjoy working with data",
+                    "creative": "think outside the box and come up with innovative solutions",
+                    "social": "work well with others and have strong interpersonal skills",
+                    "leadership": "take initiative and guide others effectively",
+                    "adaptable": "adjust quickly to changing circumstances",
+                    "self-motivated": "drive projects forward with minimal supervision",
+                    "detail-oriented": "excel at spotting patterns and inconsistencies",
+                    "collaborative": "thrive in team environments and group projects"
                   };
 
                   const descriptions = topTraits
-                    .map(trait => traitDescriptions[trait] || `demonstrate strong ${trait.toLowerCase()} qualities`)
+                    .map(trait => {
+                      const traitLower = trait.toLowerCase();
+                      // Find the closest matching description
+                      const key = Object.keys(traitDescriptions).find(k => 
+                        traitLower.includes(k) || k.includes(traitLower)
+                      );
+                      
+                      return key 
+                        ? traitDescriptions[key] 
+                        : `demonstrate strong ${trait.toLowerCase()} qualities`;
+                    })
                     .join(", and ");
 
                   return `Your personality assessment reveals that you primarily ${descriptions}. ` +
-                    `This unique combination of traits suggests you would excel in roles that leverage ${
-                      topTraits.map(trait => trait.toLowerCase()).join(", ")
-                    }. Consider careers that align with these strengths to maximize your potential.`;
+                    `This unique combination of traits suggests you would excel in roles that leverage these strengths. ` +
+                    `Consider careers that align with your natural tendencies to maximize your potential and job satisfaction.`;
                 })()}
               </p>
             </div>
@@ -410,14 +367,19 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <h2 className="text-2xl font-semibold mb-4">Your Skills Profile</h2>
             <p className="text-gray-600 mb-8">
-              This chart visualizes your top 5 skill categories based on your assessment.
+              This chart visualizes your skill categories based on your assessment.
             </p>
             
-            {/* Improved radar chart with better accuracy */}
+            {/* Improved radar chart with better axis and visualization */}
             <div className="flex justify-center w-full">
               <div className="w-full sm:max-w-[500px] aspect-square">
                 <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={topSkillsChartData}>
+                  <RadarChart 
+                    cx="50%" 
+                    cy="50%" 
+                    outerRadius="70%" 
+                    data={topSkillsChartData}
+                  >
                     <PolarGrid stroke="#e5e5e5" />
                     <PolarAngleAxis 
                       dataKey="subject" 
@@ -453,10 +415,8 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ careers, userProfile, onStart
                     .map(item => item.subject);
                   
                   // Get top personality traits
-                  const topTraits = Object.entries(personalityData)
-                    .sort(([, a], [, b]) => b - a)
-                    .slice(0, 2)
-                    .map(([trait]) => trait);
+                  const topTraits = userProfile.personalityTraits
+                    .slice(0, 2);
                   
                   // Find careers that match top skills and traits
                   const matchingCareers = careers
